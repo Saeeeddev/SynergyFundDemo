@@ -9,9 +9,17 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.101.1",
+    "axios": "^1.18.1",
+    "dayjs": "^1.11.21",
+    "highcharts": "^13.0.0",
+    "highcharts-react-official": "^3.2.3",
     "next": "16.2.9",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "react-hook-form": "^7.80.0",
+    "viem": "^2.53.1",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
