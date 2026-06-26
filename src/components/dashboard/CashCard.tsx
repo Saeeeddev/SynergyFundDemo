@@ -5,8 +5,8 @@
 // [M §6.2]: phone → two half-width 48px buttons BELOW the balance
 
 import { Button } from '@/components/ui/Button'
-import { Card } from '@/components/ui/Card'
 import { formatToman } from '@/lib/utils/currency'
+import { ArrowDownLeft, ArrowUpRight } from 'lucide-react'
 
 interface CashCardProps {
   balance: number
@@ -16,35 +16,47 @@ interface CashCardProps {
 
 export function CashCard({ balance, onDeposit, onWithdraw }: CashCardProps) {
   return (
-    <Card className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-      {/* Balance — hero; reads first in RTL (right/start side) [D §11] */}
-      <div className="flex flex-col gap-1">
-        <span className="text-[13px] font-medium text-text-muted">موجودی نقدی</span>
-        {/* display size on desktop, metric (24px) on phone [M §6.2, D §3.2] */}
-        <span className="text-[24px] lg:text-[30px] font-bold text-text tabular-nums leading-none">
-          {formatToman(balance)}
-        </span>
+    <div className="relative overflow-hidden rounded-card border border-border shadow-[var(--shadow-sm)] p-5 lg:p-6">
+      {/* Gradient background inspired by the image */}
+      <div className="absolute inset-0 bg-gradient-to-br from-teal-400 via-cyan-400 to-emerald-400 opacity-95" />
+      
+      {/* Content overlay */}
+      <div className="relative z-10 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        {/* Balance section */}
+        <div className="flex flex-col gap-2">
+          <span className="text-[14px] font-medium text-white/90">موجودی نقدی:</span>
+          <span className="text-[32px] lg:text-[38px] font-bold text-white tabular-nums leading-none tracking-tight drop-shadow-sm">
+            {formatToman(balance)}
+          </span>
+          <span className="text-[13px] text-white/80">ریال</span>
+        </div>
+
+        {/* Buttons section with improved UX */}
+        <div className="flex gap-3">
+          <Button
+            variant="primary"
+            size="wide"
+            onClick={onDeposit}
+            className="flex-1 lg:flex-none bg-purple-600 hover:bg-purple-700 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 font-semibold"
+          >
+            <ArrowDownLeft size={18} className="rtl:rotate-180" />
+            واریز
+          </Button>
+          <Button
+            variant="destructive"
+            size="wide"
+            onClick={onWithdraw}
+            className="flex-1 lg:flex-none bg-rose-500 hover:bg-rose-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 font-semibold"
+          >
+            <ArrowUpRight size={18} className="rtl:rotate-180" />
+            برداشت
+          </Button>
+        </div>
       </div>
 
-      {/* Buttons — two side-by-side half-width on phone (48px), inline on desktop [M §6.2] */}
-      <div className="flex gap-3">
-        <Button
-          variant="primary"
-          size="wide"
-          onClick={onDeposit}
-          className="flex-1 lg:flex-none"
-        >
-          واریز
-        </Button>
-        <Button
-          variant="destructive"
-          size="wide"
-          onClick={onWithdraw}
-          className="flex-1 lg:flex-none"
-        >
-          برداشت
-        </Button>
-      </div>
-    </Card>
+      {/* Decorative elements for better UX */}
+      <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+      <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
+    </div>
   )
 }

@@ -77,7 +77,7 @@ export default function InvestPage({ params }: InvestPageProps) {
   // ── Loading state ─────────────────────────────────────────────────────────────
   if (isLoading) {
     return (
-      <div className="p-3 lg:p-4 flex flex-col gap-4">
+      <div className="p-3 lg:p-3 flex flex-col gap-4">
         {/* Stepper skeleton */}
         <Skeleton className="h-12 rounded-card" />
         {/* Step 1 layout skeleton: phone = stacked, desktop = 2/3 + 1/3 */}
@@ -96,7 +96,7 @@ export default function InvestPage({ params }: InvestPageProps) {
   // ── Error / not found ─────────────────────────────────────────────────────────
   if (isError || !project) {
     return (
-      <div className="p-3 lg:p-4">
+      <div className="p-3 lg:p-3">
         <ErrorState
           scope="page"
           onRetry={() => router.replace('/marketplace')}
@@ -118,7 +118,7 @@ export default function InvestPage({ params }: InvestPageProps) {
   }
 
   return (
-    <div className="p-3 lg:p-4 flex flex-col gap-4 lg:gap-5">
+    <div className="p-3 lg:p-3 flex flex-col gap-4 lg:gap-5">
 
       {/* Stepper — always visible */}
       <Card className="p-4">

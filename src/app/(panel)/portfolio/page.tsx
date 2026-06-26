@@ -29,7 +29,7 @@ export default function PortfolioPage() {
   const netReturnSign = (summary?.netReturnPercent ?? 0) >= 0 ? 'positive' : 'negative'
 
   return (
-    <div className="flex flex-col gap-4 p-3 lg:gap-5 lg:p-4">
+    <div className="flex flex-col gap-4 p-3 lg:gap-5 lg:p-3">
 
       {/* Row 1 — 4 KPI cards [F §4 R1] — 2×2 phone / 4-up desktop */}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">

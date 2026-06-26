@@ -12,7 +12,7 @@ export default function MarketplacePage() {
   const [sort, setSort] = useState<SortOption>('newest')
 
   return (
-    <div className="flex flex-col gap-4 p-3 lg:gap-5 lg:p-4">
+    <div className="flex flex-col gap-4 p-3 lg:gap-5 lg:p-3">
       {/* Filter bar [F §3] */}
       <MarketplaceFilter
         category={category}

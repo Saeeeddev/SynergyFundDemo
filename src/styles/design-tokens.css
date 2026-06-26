@@ -7,39 +7,47 @@
 
 :root {
   /* ---- Surfaces & neutrals ---- */
-  --bg: #F7F7F7;
+  --bg: #F5F6F8;
   --surface: #FFFFFF;
-  --surface-2: #FBFBFA;
-  --border: #ECEAE9;
-  --border-strong: #E0DEDC;
-  --hover: #F4F3F2;
+  --surface-2: #FAFBFC;
+  --border: #E8EAED;
+  --border-strong: #D1D5DB;
+  --hover: #F3F4F6;
 
   /* ---- Text ---- */
-  --text: #03080E;
-  --text-2: #30322F;
-  --text-muted: #675E5D;
-  --text-subtle: #73736F;
+  --text: #1F2937;
+  --text-2: #374151;
+  --text-muted: #6B7280;
+  --text-subtle: #9CA3AF;
 
   /* ---- Sidebar (from FEATURES.md) ---- */
   --sidebar-bg: #FFFFFF;
-  --sidebar-active: #03080E;
+  --sidebar-active: #5270A8;
   --sidebar-active-fg: #FFFFFF;
+  --sidebar-hover: #EFF6FF;
+  --sidebar-text: #6B7280;
+  --sidebar-text-active: #FFFFFF;
 
   /* ---- Brand families: deep / base / soft / tint ---- */
-  --green-deep:  #354236; --green-base:  #435144; --green-soft:  #516156; --green-tint:  rgba(67,81,68,.10);
-  --blue-deep:   #172540; --blue-base:   #243344; --blue-soft:   #2C3D50; --blue-tint:   rgba(36,51,68,.10);
-  --red-deep:    #6B1D16; --red-base:    #802922; --red-soft:    #9B3127; --red-tint:    rgba(128,41,34,.10);
-  --gold-deep:   #A1810A; --gold-base:   #BB970D; --gold-soft:   #D5AB0D; --gold-tint:   rgba(187,151,13,.12);
-  --purple-deep: #462750; --purple-base: #5E2C72; --purple-soft: #7C3B99; --purple-tint: rgba(94,44,114,.10);
-  --gray-deep:   #675E5D; --gray-base:   #666565; --gray-soft:   #73736F; --gray-tint:   rgba(103,94,93,.08);
-  --black-deep:  #03080E; --black-base:  #30322F; --black-soft:  #303B45; --black-tint:  rgba(3,8,14,.06);
+  --green-deep:  #047857; --green-base:  #10B981; --green-soft:  #34D399; --green-tint:  rgba(16,185,129,.10);
+  --blue-deep:   #1E40AF; --blue-base:   #3B82F6; --blue-soft:   #60A5FA; --blue-tint:   rgba(59,130,246,.10);
+  --red-deep:    #B91C1C; --red-base:    #EF4444; --red-soft:    #F87171; --red-tint:    rgba(239,68,68,.10);
+  --gold-deep:   #D97706; --gold-base:   #F59E0B; --gold-soft:   #FBBF24; --gold-tint:   rgba(245,158,11,.12);
+  --purple-deep: #7C3AED; --purple-base: #8B5CF6; --purple-soft: #A78BFA; --purple-tint: rgba(139,92,246,.10);
+  --gray-deep:   #4B5563; --gray-base:   #6B7280; --gray-soft:   #9CA3AF; --gray-tint:   rgba(107,114,128,.08);
+  --black-deep:  #111827; --black-base:  #1F2937; --black-soft:  #374151; --black-tint:  rgba(31,41,55,.06);
+  --teal-deep:   #0F766E; --teal-base:   #14B8A6; --teal-soft:   #2DD4BF; --teal-tint:   rgba(20,184,166,.10);
+  --amber-deep:  #B45309; --amber-base:  #F59E0B; --amber-soft:  #FCD34D; --amber-tint:  rgba(245,158,11,.10);
+  --cyan-deep:   #0891B2; --cyan-base:   #06B6D4; --cyan-soft:   #22D3EE; --cyan-tint:   rgba(6,182,212,.10);
 
   /* ---- Semantic roles ---- */
   --positive:      var(--green-base);  --positive-tint: var(--green-tint);
   --negative:      var(--red-base);    --negative-tint: var(--red-tint);
   --info:          var(--blue-base);   --info-tint:     var(--blue-tint);
-  --energy:        var(--gold-soft);   --energy-tint:   var(--gold-tint);
+  --energy:        var(--amber-base);  --energy-tint:   var(--amber-tint);
   --special:       var(--purple-base); --special-tint:  var(--purple-tint);
+  --warning:       var(--gold-base);   --warning-tint:  var(--gold-tint);
+  --accent:        var(--cyan-base);   --accent-tint:   var(--cyan-tint);
 
   /* ---- Radius ---- */
   --r-main: 24px;
@@ -49,9 +57,9 @@
   --r-pill: 999px;
 
   /* ---- Shadows ---- */
-  --shadow-sm:  0 1px 2px rgba(3,8,14,.04), 0 1px 3px rgba(3,8,14,.03);
-  --shadow-md:  0 4px 16px rgba(3,8,14,.06);
-  --shadow-pop: 0 8px 28px rgba(3,8,14,.10);
+  --shadow-sm:  0 1px 2px rgba(0,0,0,.05), 0 1px 3px rgba(0,0,0,.04);
+  --shadow-md:  0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06);
+  --shadow-pop: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -2px rgba(0,0,0,.05);
 
   /* ---- Typography ---- */
   --font: "Yekan Bakh", Tahoma, Arial, sans-serif;
@@ -82,7 +90,7 @@ body {
   border: 1px solid var(--border);
   border-radius: var(--r-card);
   box-shadow: var(--shadow-sm);
-  padding: 24px;
+  padding: 12px;
 }
 
 /* ---- Skeleton shimmer — DESIGN.md §9.20 ---- */
@@ -95,7 +103,7 @@ body {
   background: linear-gradient(
     90deg,
     var(--hover) 25%,
-    #ebe9e8 50%,
+    #E5E7EB 50%,
     var(--hover) 75%
   );
   background-size: 400% 100%;

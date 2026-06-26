@@ -19,7 +19,7 @@ export default function DashboardPage() {
   const { data: activitiesPage, isLoading: activitiesLoading, isError: activitiesError, refetch: refetchActivities } = useActivities(1)
 
   return (
-    <div className="flex flex-col gap-4 p-3 lg:gap-5 lg:p-4">
+    <div className="flex flex-col gap-4 p-3 lg:gap-5 lg:p-3">
 
       {/* Row 1 — Cash card [F §2 R1] */}
       <CashCard

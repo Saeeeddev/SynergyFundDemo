@@ -35,7 +35,7 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col gap-4 p-3 lg:gap-5 lg:p-4">
+      <div className="flex flex-col gap-4 p-3 lg:gap-5 lg:p-3">
         <Skeleton className="h-64 rounded-card" />
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
           <Skeleton className="h-96 rounded-card lg:col-span-3" />
@@ -60,7 +60,7 @@ export default function ProjectPage({ params }: ProjectPageProps) {
   }
 
   return (
-    <div className="flex flex-col gap-4 p-3 lg:gap-5 lg:p-4">
+    <div className="flex flex-col gap-4 p-3 lg:gap-5 lg:p-3">
 
       {/* Row 1 — full width: header + images + 4 stats [F §11 R1] */}
       <ProjectHeader project={project} />

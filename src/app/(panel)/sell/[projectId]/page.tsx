@@ -76,7 +76,7 @@ export default function SellPage({ params }: SellPageProps) {
   // ── Loading ───────────────────────────────────────────────────────────────────
   if (isLoading) {
     return (
-      <div className="p-3 lg:p-4 flex flex-col gap-4">
+      <div className="p-3 lg:p-3 flex flex-col gap-4">
         <Skeleton className="h-12 rounded-card" />
         <div className="flex flex-col gap-4 lg:grid lg:grid-cols-3 lg:gap-5">
           <div className="flex flex-col gap-4 lg:col-span-2">
@@ -93,7 +93,7 @@ export default function SellPage({ params }: SellPageProps) {
   // ── Guard: error / not found / not owned ──────────────────────────────────────
   if (projectError || !project || !holding) {
     return (
-      <div className="p-3 lg:p-4">
+      <div className="p-3 lg:p-3">
         <ErrorState
           scope="page"
           onRetry={() => router.replace('/marketplace')}
@@ -115,7 +115,7 @@ export default function SellPage({ params }: SellPageProps) {
   }
 
   return (
-    <div className="p-3 lg:p-4 flex flex-col gap-4 lg:gap-5">
+    <div className="p-3 lg:p-3 flex flex-col gap-4 lg:gap-5">
 
       {/* Stepper (sell variant = red) */}
       <Card className="p-4">

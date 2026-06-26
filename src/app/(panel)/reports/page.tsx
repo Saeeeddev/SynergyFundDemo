@@ -21,7 +21,7 @@ export default function ReportsPage() {
   const total = totalQ.data?.total ?? 0
 
   return (
-    <div className="flex flex-col gap-4 p-3 lg:gap-5 lg:p-4">
+    <div className="flex flex-col gap-4 p-3 lg:gap-5 lg:p-3">
 
       {/* Total reports stat card */}
       <StatCard
