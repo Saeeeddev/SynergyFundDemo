@@ -1,26 +1,131 @@
+/* ============================================================
+   globals.css
+   Import order: tailwindcss → design tokens → theme mapping
+   ============================================================ */
+
 @import "tailwindcss";
+@import "../styles/design-tokens.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ------------------------------------------------------------
+   @theme — maps design CSS variables to Tailwind utility classes
+   Tailwind v4 CSS-first config: no tailwind.config.ts needed.
+
+   Convention: ALWAYS use logical-direction utilities in components:
+     ps-* / pe-* / ms-* / me-* / start-* / end-* / text-start
+   NEVER use pl- / pr- / ml- / mr- / left-* / right-* (MOBILE.md §12)
+   ------------------------------------------------------------ */
+
+@theme {
+  /* Surfaces & neutrals */
+  --color-bg:            var(--bg);
+  --color-surface:       var(--surface);
+  --color-surface-2:     var(--surface-2);
+  --color-border:        var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-hover:         var(--hover);
+
+  /* Text */
+  --color-text:          var(--text);
+  --color-text-2:        var(--text-2);
+  --color-text-muted:    var(--text-muted);
+  --color-text-subtle:   var(--text-subtle);
+
+  /* Green family */
+  --color-green-deep:  var(--green-deep);
+  --color-green-base:  var(--green-base);
+  --color-green-soft:  var(--green-soft);
+  --color-green-tint:  var(--green-tint);
+
+  /* Blue family */
+  --color-blue-deep:   var(--blue-deep);
+  --color-blue-base:   var(--blue-base);
+  --color-blue-soft:   var(--blue-soft);
+  --color-blue-tint:   var(--blue-tint);
+
+  /* Red family */
+  --color-red-deep:    var(--red-deep);
+  --color-red-base:    var(--red-base);
+  --color-red-soft:    var(--red-soft);
+  --color-red-tint:    var(--red-tint);
+
+  /* Gold family */
+  --color-gold-deep:   var(--gold-deep);
+  --color-gold-base:   var(--gold-base);
+  --color-gold-soft:   var(--gold-soft);
+  --color-gold-tint:   var(--gold-tint);
+
+  /* Purple family */
+  --color-purple-deep: var(--purple-deep);
+  --color-purple-base: var(--purple-base);
+  --color-purple-soft: var(--purple-soft);
+  --color-purple-tint: var(--purple-tint);
+
+  /* Gray family */
+  --color-gray-deep:   var(--gray-deep);
+  --color-gray-base:   var(--gray-base);
+  --color-gray-soft:   var(--gray-soft);
+  --color-gray-tint:   var(--gray-tint);
+
+  /* Black family */
+  --color-black-deep:  var(--black-deep);
+  --color-black-base:  var(--black-base);
+  --color-black-soft:  var(--black-soft);
+  --color-black-tint:  var(--black-tint);
+
+  /* Semantic roles */
+  --color-positive:      var(--positive);
+  --color-positive-tint: var(--positive-tint);
+  --color-negative:      var(--negative);
+  --color-negative-tint: var(--negative-tint);
+  --color-info:          var(--info);
+  --color-info-tint:     var(--info-tint);
+  --color-energy:        var(--energy);
+  --color-energy-tint:   var(--energy-tint);
+  --color-special:       var(--special);
+  --color-special-tint:  var(--special-tint);
+
+  /* Sidebar */
+  --color-sidebar-bg:        var(--sidebar-bg);
+  --color-sidebar-active:    var(--sidebar-active);
+  --color-sidebar-active-fg: var(--sidebar-active-fg);
+
+  /* Radius — mapped to Tailwind's --radius-* namespace */
+  --radius-main: var(--r-main);
+  --radius-card: var(--r-card);
+  --radius-md:   var(--r-md);
+  --radius-chip: var(--r-chip);
+  --radius-pill: var(--r-pill);
+
+  /* Font */
+  --font-sans: var(--font);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* ------------------------------------------------------------
+   Helper classes (MOBILE.md §10, §5.1, §12)
+   ------------------------------------------------------------ */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Main box: edge-to-edge on phone, 8px margin + 24px radius on md+ */
+.app-main {
+  margin: 0;
+  border-radius: 0;
+  background: var(--surface);
+}
+@media (min-width: 768px) {
+  .app-main {
+    margin: 8px;
+    border-radius: var(--r-main);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Safe-area aware pinned elements (MOBILE.md §10) */
+.bottom-nav {
+  padding-block-end: calc(8px + env(safe-area-inset-bottom));
+}
+
+.sticky-cta {
+  padding-block-end: calc(12px + env(safe-area-inset-bottom));
+}
+
+.mobile-header {
+  padding-block-start: env(safe-area-inset-top);
 }

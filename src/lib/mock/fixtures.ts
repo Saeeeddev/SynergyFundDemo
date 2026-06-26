@@ -1,0 +1,533 @@
+// Mock fixtures — shaped to satisfy every Zod schema from T0.6.
+// Each entity list is large enough to exercise pagination.
+
+import type { Project } from "@/types/domain";
+import type { Holding, PerformanceSeries, GeoDistribution, PortfolioSummary } from "@/lib/schemas/portfolio";
+import type { Activity, Investment } from "@/lib/schemas/investment";
+import type { Payout, PayoutMethod, IncomeSummary } from "@/lib/schemas/payout";
+import type { Report } from "@/lib/schemas/report";
+import type { User, Notification } from "@/lib/schemas/user";
+import type { DashboardSummary } from "@/types/domain";
+
+// ─── Projects (10 items → 2 pages of 8 / 5) ───────────────────────────────────
+
+export const MOCK_PROJECTS: Project[] = [
+  {
+    id: "proj-1",
+    name: "نیروگاه خورشیدی اصفهان ۱",
+    location: "اصفهان",
+    images: ["/placeholder-solar.jpg"],
+    status: "active",
+    targetYield: 18.5,
+    minInvestment: 5_000_000,
+    sharePrice: 10_000,
+    soldPercent: 72,
+    totalCapacityWatts: 500_000,
+    description: "نیروگاه خورشیدی ۵۰۰ کیلوواتی در شمال اصفهان",
+    createdAt: "2024-03-01T00:00:00Z",
+  },
+  {
+    id: "proj-2",
+    name: "نیروگاه شیراز آفتاب",
+    location: "شیراز",
+    images: ["/placeholder-solar.jpg"],
+    status: "funding",
+    targetYield: 21.0,
+    minInvestment: 3_000_000,
+    sharePrice: 8_500,
+    soldPercent: 34,
+    totalCapacityWatts: 300_000,
+    description: "نیروگاه ۳۰۰ کیلوواتی در جنوب شیراز با بازده بالا",
+    createdAt: "2024-04-15T00:00:00Z",
+  },
+  {
+    id: "proj-3",
+    name: "مجتمع انرژی کرمان",
+    location: "کرمان",
+    images: ["/placeholder-solar.jpg"],
+    status: "active",
+    targetYield: 22.3,
+    minInvestment: 10_000_000,
+    sharePrice: 12_000,
+    soldPercent: 89,
+    totalCapacityWatts: 1_000_000,
+    description: "بزرگ‌ترین نیروگاه خورشیدی بخش خصوصی در استان کرمان",
+    createdAt: "2023-11-20T00:00:00Z",
+  },
+  {
+    id: "proj-4",
+    name: "سپهر انرژی تهران",
+    location: "تهران",
+    images: ["/placeholder-solar.jpg"],
+    status: "funding",
+    targetYield: 16.8,
+    minInvestment: 2_000_000,
+    sharePrice: 7_000,
+    soldPercent: 12,
+    totalCapacityWatts: 200_000,
+    description: "نیروگاه شهری ۲۰۰ کیلوواتی در حومه تهران",
+    createdAt: "2024-05-10T00:00:00Z",
+  },
+  {
+    id: "proj-5",
+    name: "طلوع خورشید یزد",
+    location: "یزد",
+    images: ["/placeholder-solar.jpg"],
+    status: "active",
+    targetYield: 24.1,
+    minInvestment: 5_000_000,
+    sharePrice: 11_000,
+    soldPercent: 95,
+    totalCapacityWatts: 750_000,
+    description: "نیروگاه ۷۵۰ کیلوواتی در استان آفتابی یزد",
+    createdAt: "2023-08-01T00:00:00Z",
+  },
+  {
+    id: "proj-6",
+    name: "نور مهر بوشهر",
+    location: "بوشهر",
+    images: ["/placeholder-solar.jpg"],
+    status: "active",
+    targetYield: 19.7,
+    minInvestment: 4_000_000,
+    sharePrice: 9_500,
+    soldPercent: 61,
+    totalCapacityWatts: 400_000,
+    description: "نیروگاه ساحلی ۴۰۰ کیلوواتی در استان بوشهر",
+    createdAt: "2024-01-15T00:00:00Z",
+  },
+  {
+    id: "proj-7",
+    name: "انرژی سبز خراسان",
+    location: "مشهد",
+    images: ["/placeholder-solar.jpg"],
+    status: "funding",
+    targetYield: 17.5,
+    minInvestment: 3_500_000,
+    sharePrice: 8_000,
+    soldPercent: 28,
+    totalCapacityWatts: 350_000,
+    description: "نیروگاه ۳۵۰ کیلوواتی در حومه مشهد مقدس",
+    createdAt: "2024-06-01T00:00:00Z",
+  },
+  {
+    id: "proj-8",
+    name: "آفتاب زاگرس لرستان",
+    location: "خرم‌آباد",
+    images: ["/placeholder-solar.jpg"],
+    status: "active",
+    targetYield: 20.2,
+    minInvestment: 6_000_000,
+    sharePrice: 10_500,
+    soldPercent: 53,
+    totalCapacityWatts: 600_000,
+    description: "نیروگاه کوهستانی ۶۰۰ کیلوواتی در لرستان",
+    createdAt: "2024-02-20T00:00:00Z",
+  },
+  {
+    id: "proj-9",
+    name: "پرتو سپید گیلان",
+    location: "رشت",
+    images: ["/placeholder-solar.jpg"],
+    status: "funding",
+    targetYield: 14.5,
+    minInvestment: 2_500_000,
+    sharePrice: 7_500,
+    soldPercent: 7,
+    totalCapacityWatts: 150_000,
+    description: "نیروگاه ۱۵۰ کیلوواتی با تکنولوژی پنل دو رو در گیلان",
+    createdAt: "2024-06-10T00:00:00Z",
+  },
+  {
+    id: "proj-10",
+    name: "مهتاب انرژی سمنان",
+    location: "سمنان",
+    images: ["/placeholder-solar.jpg"],
+    status: "closed",
+    targetYield: 23.0,
+    minInvestment: 5_000_000,
+    sharePrice: 13_000,
+    soldPercent: 100,
+    totalCapacityWatts: 800_000,
+    description: "نیروگاه تمام‌فروخته ۸۰۰ کیلوواتی در بیابان‌های سمنان",
+    createdAt: "2023-06-01T00:00:00Z",
+  },
+];
+
+// ─── Dashboard summary ─────────────────────────────────────────────────────────
+
+function makeSeries(months: number, base: number): PerformanceSeries[] {
+  const series: PerformanceSeries[] = [];
+  const now = new Date("2025-06-01");
+  for (let i = months - 1; i >= 0; i--) {
+    const d = new Date(now);
+    d.setMonth(d.getMonth() - i);
+    series.push({
+      date: d.toISOString().slice(0, 10),
+      value: base + Math.round((Math.random() - 0.3) * base * 0.15 * (months - i)),
+    });
+  }
+  return series;
+}
+
+export const MOCK_DASHBOARD: DashboardSummary = {
+  cashBalance: 42_500_000,
+  totalInvested: 185_000_000,
+  currentValue: 213_750_000,
+  incomeEarned: 28_300_000,
+  energyProducedKwh: 142_600,
+  investedSeries: makeSeries(12, 185_000_000),
+  allocation: [
+    { name: "اصفهان ۱", value: 55_000_000 },
+    { name: "یزد", value: 72_000_000 },
+    { name: "بوشهر", value: 38_000_000 },
+    { name: "زاگرس", value: 20_000_000 },
+  ],
+};
+
+// ─── Portfolio ─────────────────────────────────────────────────────────────────
+
+export const MOCK_HOLDINGS: Holding[] = [
+  {
+    projectId: "proj-1",
+    projectName: "نیروگاه خورشیدی اصفهان ۱",
+    projectLocation: "اصفهان",
+    sharesOwned: 5_500,
+    purchasePrice: 10_000,
+    currentPrice: 10_850,
+    totalValue: 59_675_000,
+    totalInvested: 55_000_000,
+    pnl: 4_675_000,
+    pnlPercent: 8.5,
+    ownershipPercent: 1.1,
+  },
+  {
+    projectId: "proj-5",
+    projectName: "طلوع خورشید یزد",
+    projectLocation: "یزد",
+    sharesOwned: 6_545,
+    purchasePrice: 11_000,
+    currentPrice: 12_400,
+    totalValue: 81_158_000,
+    totalInvested: 72_000_000,
+    pnl: 9_158_000,
+    pnlPercent: 12.7,
+    ownershipPercent: 0.87,
+  },
+  {
+    projectId: "proj-6",
+    projectName: "نور مهر بوشهر",
+    projectLocation: "بوشهر",
+    sharesOwned: 4_000,
+    purchasePrice: 9_500,
+    currentPrice: 9_920,
+    totalValue: 39_680_000,
+    totalInvested: 38_000_000,
+    pnl: 1_680_000,
+    pnlPercent: 4.4,
+    ownershipPercent: 1.0,
+  },
+  {
+    projectId: "proj-8",
+    projectName: "آفتاب زاگرس لرستان",
+    projectLocation: "خرم‌آباد",
+    sharesOwned: 1_905,
+    purchasePrice: 10_500,
+    currentPrice: 11_200,
+    totalValue: 21_336_000,
+    totalInvested: 20_000_000,
+    pnl: 1_336_000,
+    pnlPercent: 6.68,
+    ownershipPercent: 0.32,
+  },
+];
+
+export const MOCK_PORTFOLIO_SUMMARY: PortfolioSummary = {
+  totalAssetsValue: 213_849_000,
+  totalInvested: 185_000_000,
+  incomeEarned: 28_300_000,
+  netReturn: 28_849_000,
+  netReturnPercent: 15.6,
+};
+
+export const MOCK_PERFORMANCE_SERIES: PerformanceSeries[] = makeSeries(18, 185_000_000);
+
+export const MOCK_GEO: GeoDistribution[] = [
+  { city: "اصفهان", ownershipPercent: 27.9, projectsCount: 1 },
+  { city: "یزد", ownershipPercent: 36.5, projectsCount: 1 },
+  { city: "بوشهر", ownershipPercent: 18.6, projectsCount: 1 },
+  { city: "خرم‌آباد", ownershipPercent: 9.3, projectsCount: 1 },
+  { city: "سایر", ownershipPercent: 7.7, projectsCount: 0 },
+];
+
+// ─── Activities (recent — dashboard) ──────────────────────────────────────────
+
+export const MOCK_ACTIVITIES: Activity[] = [
+  {
+    id: "act-1",
+    type: "buy",
+    description: "خرید وات — نیروگاه اصفهان ۱",
+    amount: 55_000_000,
+    shares: 5_500,
+    projectName: "نیروگاه خورشیدی اصفهان ۱",
+    date: "2025-03-10T09:15:00Z",
+  },
+  {
+    id: "act-2",
+    type: "deposit",
+    description: "واریز وجه",
+    amount: 100_000_000,
+    date: "2025-03-08T14:30:00Z",
+  },
+  {
+    id: "act-3",
+    type: "buy",
+    description: "خرید وات — طلوع خورشید یزد",
+    amount: 72_000_000,
+    shares: 6_545,
+    projectName: "طلوع خورشید یزد",
+    date: "2025-02-20T11:00:00Z",
+  },
+  {
+    id: "act-4",
+    type: "buy",
+    description: "خرید وات — نور مهر بوشهر",
+    amount: 38_000_000,
+    shares: 4_000,
+    projectName: "نور مهر بوشهر",
+    date: "2025-01-15T10:45:00Z",
+  },
+  {
+    id: "act-5",
+    type: "withdraw",
+    description: "برداشت وجه",
+    amount: 10_000_000,
+    date: "2025-01-05T16:00:00Z",
+  },
+  {
+    id: "act-6",
+    type: "sell",
+    description: "فروش وات — مهتاب انرژی سمنان",
+    amount: 26_000_000,
+    shares: 2_000,
+    projectName: "مهتاب انرژی سمنان",
+    date: "2024-12-20T13:20:00Z",
+  },
+];
+
+// ─── Investments (order history) ───────────────────────────────────────────────
+
+export const MOCK_INVESTMENTS: Investment[] = [
+  {
+    id: "inv-1",
+    type: "buy",
+    projectId: "proj-1",
+    projectName: "نیروگاه خورشیدی اصفهان ۱",
+    sharesCount: 5_500,
+    pricePerShare: 10_000,
+    totalAmount: 55_825_000,
+    fee: 825_000,
+    status: "completed",
+    date: "2025-03-10T09:15:00Z",
+  },
+  {
+    id: "inv-2",
+    type: "buy",
+    projectId: "proj-5",
+    projectName: "طلوع خورشید یزد",
+    sharesCount: 6_545,
+    pricePerShare: 11_000,
+    totalAmount: 73_080_750,
+    fee: 1_080_750,
+    status: "completed",
+    date: "2025-02-20T11:00:00Z",
+  },
+  {
+    id: "inv-3",
+    type: "buy",
+    projectId: "proj-6",
+    projectName: "نور مهر بوشهر",
+    sharesCount: 4_000,
+    pricePerShare: 9_500,
+    totalAmount: 38_570_000,
+    fee: 570_000,
+    status: "completed",
+    date: "2025-01-15T10:45:00Z",
+  },
+  {
+    id: "inv-4",
+    type: "sell",
+    projectId: "proj-10",
+    projectName: "مهتاب انرژی سمنان",
+    sharesCount: 2_000,
+    pricePerShare: 13_000,
+    totalAmount: 25_610_000,
+    fee: 390_000,
+    status: "completed",
+    date: "2024-12-20T13:20:00Z",
+  },
+  {
+    id: "inv-5",
+    type: "buy",
+    projectId: "proj-8",
+    projectName: "آفتاب زاگرس لرستان",
+    sharesCount: 1_905,
+    pricePerShare: 10_500,
+    totalAmount: 20_300_250,
+    fee: 300_250,
+    status: "completed",
+    date: "2024-11-05T08:30:00Z",
+  },
+];
+
+// ─── Payouts (12 items → 2 pages of 8 / 5) ────────────────────────────────────
+
+export const MOCK_PAYOUTS: Payout[] = Array.from({ length: 12 }, (_, i) => ({
+  id: `pay-${i + 1}`,
+  projectId: ["proj-1", "proj-5", "proj-6", "proj-8"][i % 4],
+  projectName: [
+    "نیروگاه خورشیدی اصفهان ۱",
+    "طلوع خورشید یزد",
+    "نور مهر بوشهر",
+    "آفتاب زاگرس لرستان",
+  ][i % 4],
+  amount: [2_300_000, 3_100_000, 1_400_000, 820_000][i % 4],
+  periodStart: new Date(2025, 5 - i, 1).toISOString().slice(0, 10),
+  periodEnd: new Date(2025, 5 - i + 1, 0).toISOString().slice(0, 10),
+  status: i === 0 ? "processing" : "paid",
+  date: new Date(2025, 5 - i + 1, 5).toISOString().slice(0, 10),
+}));
+
+export const MOCK_PAYOUT_METHOD: PayoutMethod = {
+  id: "method-1",
+  type: "bank",
+  name: "بانک ملی ایران",
+  details: "****-****-****-1234",
+  isDefault: true,
+};
+
+export const MOCK_INCOME_SUMMARY: IncomeSummary = {
+  totalIncome: 28_300_000,
+  totalPayment: 25_100_000,
+  thisMonthIncome: 7_620_000,
+  cashBalance: 42_500_000,
+  monthlyBars: [
+    { month: "۱۴۰۳/۱۰", amount: 6_100_000 },
+    { month: "۱۴۰۳/۱۱", amount: 5_800_000 },
+    { month: "۱۴۰۳/۱۲", amount: 6_400_000 },
+    { month: "۱۴۰۴/۰۱", amount: 6_900_000 },
+    { month: "۱۴۰۴/۰۲", amount: 7_100_000 },
+    { month: "۱۴۰۴/۰۳", amount: 7_620_000 },
+  ],
+};
+
+// ─── Reports (14 items → 2 pages of 8 / 6) ────────────────────────────────────
+
+const REPORT_TITLES = [
+  "گزارش مالی سه‌ماهه اول ۱۴۰۴",
+  "گزارش فنی بهره‌برداری اصفهان",
+  "اسناد حقوقی مالکیت وات",
+  "گزارش مالی سال ۱۴۰۳",
+  "گزارش عملکرد یزد — فصل بهار",
+  "اسناد قرارداد بوشهر",
+  "گزارش فنی تعمیرات زاگرس",
+  "گزارش مالی سه‌ماهه دوم ۱۴۰۳",
+  "گزارش ریسک و کاهش پنل",
+  "اسناد مجوز بهره‌برداری",
+  "گزارش عملکرد کل سبد",
+  "گزارش مالی سه‌ماهه سوم ۱۴۰۳",
+  "گزارش فنی بهار ۱۴۰۴",
+  "اسناد بیمه نیروگاه‌ها",
+];
+
+export const MOCK_REPORTS: Report[] = REPORT_TITLES.map((title, i) => ({
+  id: `rep-${i + 1}`,
+  title,
+  category: (["quarterly", "technical", "legal", "financial"] as const)[i % 4],
+  projectId: i % 3 !== 0 ? MOCK_PROJECTS[i % MOCK_PROJECTS.length].id : undefined,
+  projectName: i % 3 !== 0 ? MOCK_PROJECTS[i % MOCK_PROJECTS.length].name : undefined,
+  date: new Date(2025, 5 - Math.floor(i / 2), 15).toISOString().slice(0, 10),
+  sizeKb: 200 + i * 150,
+  downloadUrl: `/mock-reports/report-${i + 1}.pdf`,
+}));
+
+// ─── User ─────────────────────────────────────────────────────────────────────
+
+export const MOCK_USER: User = {
+  id: "user-1",
+  username: "admin",
+  name: "علی رضایی",
+  email: "ali.rezaei@example.com",
+  phone: "09121234567",
+  role: "مدیر سبد",
+  verificationStatus: "verified",
+};
+
+// ─── Notifications (8 items) ───────────────────────────────────────────────────
+
+export const MOCK_NOTIFICATIONS: Notification[] = [
+  {
+    id: "notif-1",
+    type: "payout",
+    title: "پرداخت درآمد ماهانه",
+    body: "درآمد فروردین ماه نیروگاه اصفهان واریز شد",
+    timestamp: "2025-06-05T08:00:00Z",
+    read: false,
+  },
+  {
+    id: "notif-2",
+    type: "performance",
+    title: "عملکرد بالاتر از هدف",
+    body: "نیروگاه یزد ۱۲٪ بالاتر از هدف تولید کرد",
+    timestamp: "2025-06-03T14:30:00Z",
+    read: false,
+  },
+  {
+    id: "notif-3",
+    type: "payout",
+    title: "پرداخت درآمد ماهانه",
+    body: "درآمد فروردین ماه نیروگاه یزد واریز شد",
+    timestamp: "2025-06-05T08:10:00Z",
+    read: true,
+  },
+  {
+    id: "notif-4",
+    type: "performance",
+    title: "گزارش عملکرد ماهانه آماده شد",
+    body: "گزارش عملکرد اردیبهشت ماه منتشر شد",
+    timestamp: "2025-05-31T10:00:00Z",
+    read: true,
+  },
+  {
+    id: "notif-5",
+    type: "payout",
+    title: "پرداخت درآمد ماهانه",
+    body: "درآمد اردیبهشت ماه نیروگاه بوشهر واریز شد",
+    timestamp: "2025-05-05T09:00:00Z",
+    read: true,
+  },
+  {
+    id: "notif-6",
+    type: "performance",
+    title: "کاهش موقت تولید",
+    body: "تولید زاگرس به دلیل گرد و غبار ۴٪ کاهش یافت",
+    timestamp: "2025-04-20T16:00:00Z",
+    read: true,
+  },
+  {
+    id: "notif-7",
+    type: "payout",
+    title: "پرداخت درآمد ماهانه",
+    body: "درآمد فروردین ماه نیروگاه زاگرس واریز شد",
+    timestamp: "2025-04-05T08:30:00Z",
+    read: true,
+  },
+  {
+    id: "notif-8",
+    type: "performance",
+    title: "رکورد تولید ثبت شد",
+    body: "نیروگاه اصفهان در اسفند ۱۴۰۳ رکورد تولید را شکست",
+    timestamp: "2025-03-15T12:00:00Z",
+    read: true,
+  },
+];

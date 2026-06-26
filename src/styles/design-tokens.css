@@ -1,0 +1,111 @@
+/* ============================================================
+   design-tokens.css — Canonical CSS custom properties
+   Source of truth: DESIGN.md §12, §5, §9.20
+   NOTE: "token" here means CSS custom property, NOT blockchain
+         ownership token (watt/ERC-20). See ARCHITECTURE.md preamble.
+   ============================================================ */
+
+:root {
+  /* ---- Surfaces & neutrals ---- */
+  --bg: #F7F7F7;
+  --surface: #FFFFFF;
+  --surface-2: #FBFBFA;
+  --border: #ECEAE9;
+  --border-strong: #E0DEDC;
+  --hover: #F4F3F2;
+
+  /* ---- Text ---- */
+  --text: #03080E;
+  --text-2: #30322F;
+  --text-muted: #675E5D;
+  --text-subtle: #73736F;
+
+  /* ---- Sidebar (from FEATURES.md) ---- */
+  --sidebar-bg: #FFFFFF;
+  --sidebar-active: #03080E;
+  --sidebar-active-fg: #FFFFFF;
+
+  /* ---- Brand families: deep / base / soft / tint ---- */
+  --green-deep:  #354236; --green-base:  #435144; --green-soft:  #516156; --green-tint:  rgba(67,81,68,.10);
+  --blue-deep:   #172540; --blue-base:   #243344; --blue-soft:   #2C3D50; --blue-tint:   rgba(36,51,68,.10);
+  --red-deep:    #6B1D16; --red-base:    #802922; --red-soft:    #9B3127; --red-tint:    rgba(128,41,34,.10);
+  --gold-deep:   #A1810A; --gold-base:   #BB970D; --gold-soft:   #D5AB0D; --gold-tint:   rgba(187,151,13,.12);
+  --purple-deep: #462750; --purple-base: #5E2C72; --purple-soft: #7C3B99; --purple-tint: rgba(94,44,114,.10);
+  --gray-deep:   #675E5D; --gray-base:   #666565; --gray-soft:   #73736F; --gray-tint:   rgba(103,94,93,.08);
+  --black-deep:  #03080E; --black-base:  #30322F; --black-soft:  #303B45; --black-tint:  rgba(3,8,14,.06);
+
+  /* ---- Semantic roles ---- */
+  --positive:      var(--green-base);  --positive-tint: var(--green-tint);
+  --negative:      var(--red-base);    --negative-tint: var(--red-tint);
+  --info:          var(--blue-base);   --info-tint:     var(--blue-tint);
+  --energy:        var(--gold-soft);   --energy-tint:   var(--gold-tint);
+  --special:       var(--purple-base); --special-tint:  var(--purple-tint);
+
+  /* ---- Radius ---- */
+  --r-main: 24px;
+  --r-card: 18px;
+  --r-md:   12px;
+  --r-chip: 10px;
+  --r-pill: 999px;
+
+  /* ---- Shadows ---- */
+  --shadow-sm:  0 1px 2px rgba(3,8,14,.04), 0 1px 3px rgba(3,8,14,.03);
+  --shadow-md:  0 4px 16px rgba(3,8,14,.06);
+  --shadow-pop: 0 8px 28px rgba(3,8,14,.10);
+
+  /* ---- Typography ---- */
+  --font: "Yekan Bakh", Tahoma, Arial, sans-serif;
+  --lh-body: 1.75;
+}
+
+/* ---- RTL direction on html element ---- */
+html[dir="rtl"] { direction: rtl; }
+
+/* ---- Body base ---- */
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  line-height: var(--lh-body);
+}
+
+/* ---- Main content box — FEATURES.md §1: 24px radius, 8px margin each side ---- */
+.app-main {
+  margin: 8px;
+  background: var(--surface);
+  border-radius: var(--r-main);
+}
+
+/* ---- Base card atom — DESIGN.md §5 ---- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-sm);
+  padding: 24px;
+}
+
+/* ---- Skeleton shimmer — DESIGN.md §9.20 ---- */
+@keyframes skeleton-sweep {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--hover) 25%,
+    #ebe9e8 50%,
+    var(--hover) 75%
+  );
+  background-size: 400% 100%;
+  animation: skeleton-sweep 1.6s ease-in-out infinite;
+  border-radius: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+    background: var(--hover);
+  }
+}
