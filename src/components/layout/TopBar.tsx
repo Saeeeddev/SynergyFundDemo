@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { usePathname } from 'next/navigation'
+import Link from 'next/link'
 import { Menu, Search, X } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { SearchField } from '@/components/ui/SearchField'
@@ -10,26 +11,34 @@ import { ProfileDropdown } from './ProfileDropdown'
 import { useNotifications, useUnreadCount } from '@/lib/hooks/useNotifications'
 import { useMe } from '@/lib/hooks/useAuth'
 
-// Page title map for the navigation label [F §1.2]
-const PAGE_TITLES: Record<string, string> = {
-  '/dashboard':    'داشبورد',
-  '/marketplace':  'بازار',
-  '/portfolio':    'دارایی‌ها',
-  '/income':       'درآمد و پرداخت‌ها',
-  '/reports':      'گزارش‌ها',
-  '/settings':     'تنظیمات',
-  '/notifications':'اعلان‌ها',
-  '/profile':      'پروفایل',
-  '/verification': 'تأیید هویت',
-  '/project':      'جزئیات پروژه',
-  '/invest':       'سرمایه‌گذاری',
-  '/sell':         'فروش',
+// Breadcrumb definitions per route segment [F §1.2]
+type Crumb = { label: string; href?: string }
+
+const BREADCRUMBS: Record<string, Crumb[]> = {
+  '/dashboard':    [{ label: 'داشبورد' }],
+  '/marketplace':  [{ label: 'فرصت‌های سرمایه‌گذاری' }],
+  '/portfolio':    [{ label: 'سبد دارایی' }],
+  '/income':       [{ label: 'درآمدها و پرداخت‌ها' }],
+  '/reports':      [{ label: 'گزارش‌ها' }],
+  '/settings':     [{ label: 'تنظیمات' }],
+  '/notifications':[{ label: 'اعلان‌ها' }],
+  '/profile':      [{ label: 'پروفایل' }],
+  '/verification': [{ label: 'تأیید هویت' }],
+  '/project':      [{ label: 'فرصت‌های سرمایه‌گذاری', href: '/marketplace' }, { label: 'جزئیات پروژه' }],
+  '/invest':       [{ label: 'فرصت‌های سرمایه‌گذاری', href: '/marketplace' }, { label: 'سرمایه‌گذاری' }],
+  '/sell':         [{ label: 'فرصت‌های سرمایه‌گذاری', href: '/marketplace' }, { label: 'فروش' }],
 }
 
-function usePageTitle() {
+function useBreadcrumbs(): Crumb[] {
   const pathname = usePathname()
   const segment = '/' + (pathname.split('/')[1] ?? '')
-  return PAGE_TITLES[segment] ?? 'پنل مدیریت'
+  return BREADCRUMBS[segment] ?? [{ label: 'پنل مدیریت' }]
+}
+
+// Mobile page title (still just the leaf label)
+function usePageTitle(): string {
+  const crumbs = useBreadcrumbs()
+  return crumbs[crumbs.length - 1]?.label ?? 'پنل مدیریت'
 }
 
 interface TopBarProps {
@@ -44,6 +53,7 @@ export function TopBar({ onOpenDrawer }: TopBarProps) {
   const { data: notifications = [] } = useNotifications()
   const unreadCount = useUnreadCount()
   const { data: user = null } = useMe()
+  const breadcrumbs = useBreadcrumbs()
   const pageTitle = usePageTitle()
 
   const initials = (user?.name ?? 'م').charAt(0)
@@ -51,38 +61,59 @@ export function TopBar({ onOpenDrawer }: TopBarProps) {
   return (
     <>
       {/* ── Desktop top bar (lg+) ───────────────────────────────────────────── */}
-      {/* Right→left: navigation label · Search (flex-1) · Bell · Profile [F §1.2] */}
-      <header className="hidden lg:flex items-center h-16 px-4 gap-3 bg-surface border-b border-border shrink-0 sticky top-0 z-30">
-        {/* Navigation label (current page title) */}
-        <span className="text-[15px] font-semibold text-text shrink-0">{pageTitle}</span>
+      {/*
+        RTL flex order: first element → visual RIGHT, last → visual LEFT
+        RIGHT: [breadcrumb] | [search flex-1] | [bell] [profile] :LEFT
+      */}
+      <header className="hidden lg:flex items-center h-16 px-5 gap-4 shrink-0 bg-bg">
+        {/* Breadcrumb navigation — visual right in RTL */}
+        <nav aria-label="مسیر" className="flex items-center gap-1.5 shrink-0">
+          {breadcrumbs.map((crumb, i) => (
+            <span key={i} className="flex items-center gap-1.5">
+              {i > 0 && (
+                <span className="text-text-subtle text-[13px] select-none">/</span>
+              )}
+              {crumb.href ? (
+                <Link
+                  href={crumb.href}
+                  className="text-[13px] text-text-muted hover:text-text transition-colors duration-[120ms]"
+                >
+                  {crumb.label}
+                </Link>
+              ) : (
+                <span className="text-[15px] font-semibold text-text">
+                  {crumb.label}
+                </span>
+              )}
+            </span>
+          ))}
+        </nav>
 
-        {/* Search field — grows to fill space [D §9.13] */}
-        <div className="flex-1 max-w-xs">
-          <SearchField className="w-full" />
+        {/* Search field — flex-1 centers it between breadcrumb and actions */}
+        <div className="flex-1 flex justify-center">
+          <SearchField className="w-full max-w-xs" />
         </div>
 
-        {/* Notification bell + dropdown [D §9.14] */}
-        <NotificationDropdown
-          notifications={notifications}
-          unreadCount={unreadCount}
-          open={notifOpen}
-          onToggle={() => setNotifOpen((o) => !o)}
-          onClose={() => setNotifOpen(false)}
-        />
-
-        {/* Profile box + dropdown [D §9.15] */}
-        <ProfileDropdown
-          user={user}
-          open={profileOpen}
-          onToggle={() => setProfileOpen((o) => !o)}
-          onClose={() => setProfileOpen(false)}
-        />
+        {/* Notification + Profile group — visual left in RTL, pe-3 keeps them off the edge */}
+        <div className="flex items-center gap-2 pe-3">
+          <NotificationDropdown
+            notifications={notifications}
+            unreadCount={unreadCount}
+            open={notifOpen}
+            onToggle={() => setNotifOpen((o) => !o)}
+            onClose={() => setNotifOpen(false)}
+          />
+          <ProfileDropdown
+            user={user}
+            open={profileOpen}
+            onToggle={() => setProfileOpen((o) => !o)}
+            onClose={() => setProfileOpen(false)}
+          />
+        </div>
       </header>
 
       {/* ── Mobile compact header (<lg) ────────────────────────────────────────── */}
-      {/* Right→left: hamburger · title · spacer · search icon · bell · avatar [M §3.3] */}
-      <header className="mobile-header lg:hidden flex items-center h-14 px-3 gap-2 bg-surface border-b border-border shrink-0 sticky top-0 z-30">
-        {/* Hamburger — opens drawer (start/right side in RTL) */}
+      <header className="mobile-header lg:hidden flex items-center h-14 px-3 gap-2 shrink-0 sticky top-0 z-30">
         <button
           onClick={onOpenDrawer}
           aria-label="منوی ناوبری"
@@ -91,10 +122,8 @@ export function TopBar({ onOpenDrawer }: TopBarProps) {
           <Menu size={22} strokeWidth={1.5} />
         </button>
 
-        {/* Page title — shrinks if needed */}
         <span className="flex-1 text-[15px] font-semibold text-text truncate">{pageTitle}</span>
 
-        {/* Search icon — tapping opens the search overlay */}
         <button
           onClick={() => setSearchOpen(true)}
           aria-label="جستجو"
@@ -103,13 +132,11 @@ export function TopBar({ onOpenDrawer }: TopBarProps) {
           <Search size={20} strokeWidth={1.5} />
         </button>
 
-        {/* Bell icon with unread badge */}
         <button
           onClick={() => setNotifOpen(true)}
           aria-label="اعلان‌ها"
           className="relative flex items-center justify-center w-10 h-10 rounded-md text-text-muted hover:bg-hover min-h-[44px] transition-colors duration-[120ms]"
         >
-          {/* Using Bell from lucide */}
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
             <path d="M13.73 21a2 2 0 0 1-3.46 0" />
@@ -121,7 +148,6 @@ export function TopBar({ onOpenDrawer }: TopBarProps) {
           )}
         </button>
 
-        {/* Avatar — tapping opens profile sheet */}
         <button
           onClick={() => setProfileOpen(true)}
           aria-label="پروفایل"
@@ -133,7 +159,7 @@ export function TopBar({ onOpenDrawer }: TopBarProps) {
         </button>
       </header>
 
-      {/* ── Search overlay (mobile) — full-width sheet [M §3.3] ─────────────── */}
+      {/* ── Search overlay (mobile) ─────────────────────────────────────────── */}
       {searchOpen && (
         <div className="lg:hidden fixed inset-0 z-50 bg-surface flex flex-col">
           <div className="flex items-center gap-2 px-4 h-14 border-b border-border">
@@ -199,7 +225,6 @@ export function TopBar({ onOpenDrawer }: TopBarProps) {
       {/* ── Mobile profile bottom sheet ───────────────────────────────────────── */}
       {profileOpen && (
         <MobileSheet title="حساب کاربری" onClose={() => setProfileOpen(false)}>
-          {/* User info */}
           <div className="flex items-center gap-3 px-4 py-4 border-b border-border">
             <span className="w-12 h-12 rounded-pill bg-green-tint text-green-deep text-xl font-bold flex items-center justify-center shrink-0">
               {initials}
@@ -209,7 +234,6 @@ export function TopBar({ onOpenDrawer }: TopBarProps) {
               <p className="text-sm text-text-muted">{user?.role ?? 'مدیر'}</p>
             </div>
           </div>
-          {/* Menu items */}
           {[
             { href: '/profile',       label: 'پروفایل'     },
             { href: '/notifications', label: 'اعلان‌ها'    },
@@ -253,24 +277,20 @@ function MobileSheet({
 }) {
   return (
     <div className="lg:hidden fixed inset-0 z-50 flex flex-col justify-end">
-      {/* Scrim */}
       <div
         className="absolute inset-0 bg-black/50"
         onClick={onClose}
         aria-hidden="true"
       />
-      {/* Sheet */}
       <div
         role="dialog"
         aria-modal="true"
         aria-label={title}
         className="relative bg-surface rounded-t-[var(--r-card)] shadow-[var(--shadow-pop)] w-full max-h-[80dvh] flex flex-col"
       >
-        {/* Drag handle */}
         <div className="flex justify-center pt-3 pb-1 shrink-0">
           <div className="w-10 h-1 rounded-pill bg-border-strong" />
         </div>
-        {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
           <span className="font-semibold text-[15px] text-text">{title}</span>
           <button
@@ -280,7 +300,6 @@ function MobileSheet({
             <X size={18} />
           </button>
         </div>
-        {/* Content */}
         <div className="flex-1 overflow-y-auto">{children}</div>
       </div>
     </div>

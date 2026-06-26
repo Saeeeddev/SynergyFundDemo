@@ -5,9 +5,5 @@ import ShellClient from '@/components/layout/ShellClient'
 // Page content is passed as server-rendered children: Next.js evaluates children
 // as server components even though ShellClient is a client component. [A §3.2]
 export default function PanelLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="bg-bg min-h-[100dvh]">
-      <ShellClient>{children}</ShellClient>
-    </div>
-  )
+  return <ShellClient>{children}</ShellClient>
 }

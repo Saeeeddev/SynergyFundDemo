@@ -104,17 +104,52 @@
    Helper classes (MOBILE.md §10, §5.1, §12)
    ------------------------------------------------------------ */
 
-/* Main box: edge-to-edge on phone, 8px margin + 24px radius on md+ */
-.app-main {
-  margin: 0;
-  border-radius: 0;
+/* Content box: white card — edge-to-edge on phone, 8px margin + 24px radius on md+ [M §5.1] */
+.content-box {
   background: var(--surface);
+  border-radius: 0;
+  margin: 0;
+  /* Thin custom scrollbar — transparent track, no arrows */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(103,94,93,0.3) transparent;
 }
 @media (min-width: 768px) {
-  .app-main {
+  .content-box {
     margin: 8px;
+    margin-top: 0;
     border-radius: var(--r-main);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    /* Inset content from the scrollbar edge (scrollbar is on left in RTL) */
+    padding-inline-end: 8px;
   }
+}
+
+/* WebKit scrollbar — transparent track, thin thumb, no up/down buttons */
+.content-box::-webkit-scrollbar {
+  width: 5px;
+}
+.content-box::-webkit-scrollbar-track {
+  background: transparent;
+  /* Vertical margin so scrollbar doesn't cover the corner border-radius */
+  margin-block: 14px;
+}
+.content-box::-webkit-scrollbar-thumb {
+  background: rgba(103,94,93,0.28);
+  border-radius: 999px;
+}
+.content-box::-webkit-scrollbar-thumb:hover {
+  background: rgba(103,94,93,0.45);
+}
+.content-box::-webkit-scrollbar-button {
+  display: none;
+  height: 0;
+  width: 0;
+}
+
+/* Legacy alias — kept for any markup that still uses .app-main */
+.app-main {
+  background: var(--surface);
 }
 
 /* Safe-area aware pinned elements (MOBILE.md §10) */

@@ -70,7 +70,7 @@ export function ProfileDropdown({
         aria-expanded={open}
         aria-haspopup="true"
         className={cn(
-          'flex items-center gap-2 px-3 py-2 rounded-md border border-border',
+          'flex items-center gap-2 px-3 py-2 rounded-md border border-border bg-white',
           'hover:bg-hover transition-colors duration-[120ms] ease-out motion-reduce:transition-none',
           'min-h-[44px] md:min-h-0', // touch target [M §4]
         )}
@@ -100,7 +100,7 @@ export function ProfileDropdown({
         <div
           role="menu"
           aria-label="منوی پروفایل"
-          className="absolute top-full start-0 mt-2 w-48 bg-surface border border-border rounded-md shadow-[var(--shadow-md)] z-50 overflow-hidden py-1"
+          className="absolute top-full end-0 mt-2 w-48 bg-surface border border-border rounded-md shadow-[var(--shadow-md)] z-50 overflow-hidden py-1"
         >
           {MENU_ITEMS.map(({ href, label, icon: Icon }) => (
             <Link

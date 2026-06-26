@@ -21,6 +21,9 @@ interface MobileBottomNavProps {
 export function MobileBottomNav({ onOpenDrawer }: MobileBottomNavProps) {
   const pathname = usePathname()
 
+  // Hide bottom nav during Invest/Sell checkout flows so the sticky CTA owns the bottom [M §6.8, M §7.6]
+  if (pathname.startsWith('/invest/') || pathname.startsWith('/sell/')) return null
+
   return (
     // Hidden at lg+ — persistent sidebar takes over [M §2]
     <nav

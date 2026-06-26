@@ -1,18 +1,17 @@
-"use client";
+'use client'
 
-export default function ErrorBoundary({
-  error,
+// [D §9.21] Dashboard page-level error boundary — shell stays visible, only content replaced
+import { ErrorState } from '@/components/ui/ErrorState'
+
+export default function DashboardError({
   reset,
 }: {
-  error: Error & { digest?: string };
-  reset: () => void;
+  error: Error & { digest?: string }
+  reset: () => void
 }) {
   return (
-    <div className="flex flex-col items-center justify-center p-8 gap-4">
-      <p className="text-red-base">خطایی رخ داده است</p>
-      <button onClick={reset} className="px-4 py-2 border border-border rounded-md">
-        تلاش مجدد
-      </button>
+    <div className="flex items-center justify-center min-h-[60vh] p-4">
+      <ErrorState scope="page" onRetry={reset} />
     </div>
-  );
+  )
 }

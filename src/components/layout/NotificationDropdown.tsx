@@ -99,7 +99,7 @@ export function NotificationDropdown({
         <div
           role="dialog"
           aria-label="اعلان‌ها"
-          className="absolute top-full start-0 mt-2 w-80 bg-surface border border-border rounded-md shadow-[var(--shadow-md)] z-50 overflow-hidden"
+          className="absolute top-full end-0 mt-2 w-80 bg-surface border border-border rounded-md shadow-[var(--shadow-md)] z-50 overflow-hidden"
         >
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-border">
