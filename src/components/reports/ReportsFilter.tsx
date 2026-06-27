@@ -56,7 +56,7 @@ export function ReportsFilter({ value, onChange }: ReportsFilterProps) {
           />
         </div>
         {hasActiveFilter && (
-          <Button variant="ghost" size="sm" onClick={clear}>
+          <Button variant="ghost" size="compact" onClick={clear}>
             پاک‌کردن فیلتر
           </Button>
         )}

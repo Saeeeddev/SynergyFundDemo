@@ -13,7 +13,7 @@ import { Empty } from '@/components/ui/Empty'
 import { formatToman } from '@/lib/utils/currency'
 import { bidiIsolate, formatNumber } from '@/lib/utils/numbers'
 import { formatJalali } from '@/lib/utils/jalali'
-import { Activity } from 'lucide-react'
+import { Activity as ActivityIcon } from 'lucide-react'
 import type { Activity } from '@/lib/schemas/investment'
 
 interface RecentActivitiesTableProps {
@@ -102,7 +102,7 @@ export function RecentActivitiesTable({
       {/* Empty */}
       {!isLoading && !isError && activities.length === 0 && (
         <Empty
-          icon={<Activity size={48} />}
+          icon={<ActivityIcon size={48} />}
           message="هیچ فعالیتی ثبت نشده است"
         />
       )}

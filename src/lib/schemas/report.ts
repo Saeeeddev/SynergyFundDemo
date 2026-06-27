@@ -26,4 +26,5 @@ export const PaginatedReportsSchema = z.object({
   totalPages: z.number(),
 });
 
+export type ReportCategory = z.infer<typeof ReportCategorySchema>;
 export type Report = z.infer<typeof ReportSchema>;
