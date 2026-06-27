@@ -4,7 +4,8 @@
 // [M §6.2] Phone stack order: Cash → 2×2 KPIs → Area chart → Donut → Activities
 // Uses React Query hooks; wired to mock data via useDashboard + useActivities
 
-import { TrendingUp, DollarSign, Zap, BarChart2 } from 'lucide-react'
+import { TrendingUp, DollarSign, Zap, BarChart2, LayoutDashboard } from 'lucide-react'
+import { PageHeader } from '@/components/ui/PageHeader'
 import { CashCard } from '@/components/dashboard/CashCard'
 import { TotalInvestedChart } from '@/components/dashboard/TotalInvestedChart'
 import { AssetAllocationChart } from '@/components/dashboard/AssetAllocationChart'
@@ -20,6 +21,14 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-4 p-3 lg:gap-5 lg:p-3">
+
+      {/* asas-style page header — desktop only (mobile shows the title in the TopBar) */}
+      <PageHeader
+        className="hidden lg:flex"
+        icon={<LayoutDashboard size={22} strokeWidth={1.75} />}
+        title="داشبورد"
+        subtitle="نمای کلی سرمایه‌گذاری‌ها، دارایی‌ها و درآمد شما"
+      />
 
       {/* Row 1 — Cash card [F §2 R1] */}
       <CashCard
@@ -78,7 +87,11 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Row 4 — Recent Activities [F §2 R4] */}
+  
+
+      
+
+      {/* Row 6 — Recent Activities [F §2 R4] */}
       <RecentActivitiesTable
         activities={activitiesPage?.data ?? []}
         isLoading={activitiesLoading}

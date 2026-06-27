@@ -19,7 +19,7 @@ export default function ShellClient({ children }: ShellClientProps) {
         Outer: full-viewport gray field (#F7F7F7 = --bg).
         In RTL: sidebar (first DOM element) appears on the RIGHT [D §6.1].
       */}
-      <div className="flex h-[100dvh] overflow-hidden bg-bg">
+      <div className="flex h-[100dvh] overflow-hidden bg-[linear-gradient(135deg,#E3E8F3_0%,#ECE5F6_50%,#E4EDF6_100%)]">
         {/* Persistent sidebar — desktop only [M §2], inline-start = right in RTL */}
         <Sidebar />
 

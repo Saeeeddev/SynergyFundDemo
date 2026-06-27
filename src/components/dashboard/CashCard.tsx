@@ -16,9 +16,9 @@ interface CashCardProps {
 
 export function CashCard({ balance, onDeposit, onWithdraw }: CashCardProps) {
   return (
-    <div className="relative overflow-hidden rounded-card border border-border shadow-[var(--shadow-sm)] p-5 lg:p-6">
-      {/* Gradient background inspired by the image */}
-      <div className="absolute inset-0 bg-gradient-to-br from-teal-400 via-cyan-400 to-emerald-400 opacity-95" />
+    <div className="relative overflow-hidden rounded-card border border-border shadow-[var(--shadow-card)] p-5 lg:p-6">
+      {/* asas slate-blue gradient (primary-blue → light-blue → lavender) */}
+      <div className="absolute inset-0 bg-gradient-to-bl from-[var(--blue-deep)] via-[var(--blue-base)] to-[var(--purple-soft)] opacity-95" />
       
       {/* Content overlay */}
       <div className="relative z-10 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -28,25 +28,25 @@ export function CashCard({ balance, onDeposit, onWithdraw }: CashCardProps) {
           <span className="text-[32px] lg:text-[38px] font-bold text-white tabular-nums leading-none tracking-tight drop-shadow-sm">
             {formatToman(balance)}
           </span>
-          <span className="text-[13px] text-white/80">ریال</span>
+         
         </div>
 
         {/* Buttons section with improved UX */}
         <div className="flex gap-3">
           <Button
-            variant="primary"
+            variant="secondary"
             size="wide"
             onClick={onDeposit}
-            className="flex-1 lg:flex-none bg-purple-600 hover:bg-purple-700 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 font-semibold"
+            className="flex-1 lg:flex-none bg-white text-blue-deep border-0 shadow-md hover:shadow-lg hover:bg-white/90 transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 font-semibold"
           >
             <ArrowDownLeft size={18} className="rtl:rotate-180" />
             واریز
           </Button>
           <Button
-            variant="destructive"
+            variant="secondary"
             size="wide"
             onClick={onWithdraw}
-            className="flex-1 lg:flex-none bg-rose-500 hover:bg-rose-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 font-semibold"
+            className="flex-1 lg:flex-none bg-white/15 text-white border border-white/40 backdrop-blur shadow-sm hover:bg-white/25 transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 font-semibold"
           >
             <ArrowUpRight size={18} className="rtl:rotate-180" />
             برداشت

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import {
   LayoutDashboard,
   Store,
@@ -38,11 +39,15 @@ export const NAV_ITEMS = [
 
 export function SidebarLogo() {
   return (
-    <div className="flex items-center gap-3 px-5 h-16 shrink-0">
-      <div className="w-8 h-8 rounded-chip bg-gold-tint flex items-center justify-center shrink-0">
-        <span className="text-gold-base text-lg leading-none">☀</span>
-      </div>
-      <span className="font-semibold text-[15px] text-text">سینرژی</span>
+    <div className="flex items-center px-5 h-16 shrink-0">
+      <Image
+        src="/Images/SynergyFundLogoIconLeft.jpg"
+        alt="سینرژی"
+        width={737}
+        height={258}
+        className="h-11 w-auto object-contain"
+        priority
+      />
     </div>
   )
 }
@@ -66,7 +71,7 @@ export function SidebarNav({ pathname, onNavigate }: SidebarNavProps) {
             href={href}
             onClick={onNavigate}
             className={cn(
-              'flex items-center gap-3 px-3 py-3 rounded-[28px] text-[13px] font-medium',
+              'flex items-center gap-3 px-3 py-3 rounded-[28px] text-[15px] font-medium',
               'transition-colors duration-[120ms] ease-out motion-reduce:transition-none',
               'min-h-[44px]',
               isActive
@@ -74,7 +79,7 @@ export function SidebarNav({ pathname, onNavigate }: SidebarNavProps) {
                 : 'text-text-muted hover:bg-hover hover:text-text',
             )}
           >
-            <Icon size={20} strokeWidth={1.5} className="shrink-0" />
+            <Icon size={22} strokeWidth={1.5} className="shrink-0" />
             <span>{label}</span>
           </Link>
         )

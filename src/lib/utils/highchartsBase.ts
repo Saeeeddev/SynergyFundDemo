@@ -1,44 +1,47 @@
 // Chart design-token values — must stay in sync with design-tokens.css [D §12].
 // Referenced by all four chart wrappers; never use raw hex in components.
 
-/** Pinned hex values matching the :root variables in design-tokens.css */
+/**
+ * asas chart palette — used for ALL charts.
+ * COLORS = ['#4361ee', '#00A67E', '#5DADE2', '#F39C12', '#8E44AD']
+ */
 export const CHART_COLORS = {
-  green: '#435144',                        // --green-base (primary series, area line)
-  greenDeep: '#354236',                    // --green-deep
-  greenGradTop: 'rgba(67,81,68,.15)',      // area-chart fill — top of gradient
-  greenGradBot: 'rgba(67,81,68,0)',        // area-chart fill — bottom (transparent)
+  green: '#00A67E',                        // positive / turquoise (name kept for compat)
+  greenDeep: '#00876A',
+  greenGradTop: 'rgba(67,97,238,.18)',     // area fill — top (blue #4361ee)
+  greenGradBot: 'rgba(67,97,238,0)',       // area fill — bottom (transparent)
 
-  blue: '#243344',                         // --blue-base (benchmark series)
-  blueSoft: '#2C3D50',                     // --blue-soft
+  blue: '#4361ee',                         // primary slate-blue (series, bars)
+  blueSoft: '#5DADE2',                     // light blue (gradient end)
 
-  gold: '#D5AB0D',                         // --gold-soft  (bar / energy identity)
-  goldBase: '#BB970D',                     // --gold-base  (bar hover)
-  goldDeep: '#A1810A',                     // --gold-deep
+  gold: '#F39C12',                         // orange (energy identity)
+  goldBase: '#E08E0B',
+  goldDeep: '#C47F08',
 
-  purple: '#5E2C72',                       // --purple-base
-  gray: '#666565',                         // --gray-base
+  purple: '#8E44AD',                       // violet
+  gray: '#9AA3B2',                         // neutral
 
-  red: '#802922',                          // --red-base (negative / below-benchmark)
+  red: '#E74C3C',                          // negative / below-benchmark
 
-  border: '#ECEAE9',                       // --border (gridlines, tooltip border)
-  textSubtle: '#73736F',                   // --text-subtle (axis labels, captions)
-  text: '#03080E',                         // --text (primary)
-  surface: '#FFFFFF',                      // --surface (light tooltip bg)
+  border: '#ECEFF3',                       // gridlines, tooltip border
+  textSubtle: '#9AA3B2',                   // axis labels, captions
+  text: '#2D2D2D',                         // primary
+  surface: '#FFFFFF',                      // light tooltip bg
 
-  surfaceDark: '#03080E',                  // --black-deep  (dark multi-series tooltip bg)
-  surfaceDark2: '#30322F',                 // --black-base  (dark tooltip border)
+  surfaceDark: '#2D2D2D',                  // dark multi-series tooltip bg
+  surfaceDark2: '#4A4F57',                 // dark tooltip border
 } as const
 
 /**
- * Categorical color order for Donut / multi-series charts [D §10]:
- * Green → Blue → Gold → Purple → Gray
+ * Categorical color order for Donut / multi-series charts.
+ * Exact asas palette: blue → turquoise → light-blue → orange → violet
  */
 export const CATEGORICAL_COLORS: readonly string[] = [
-  CHART_COLORS.green,
-  CHART_COLORS.blue,
-  CHART_COLORS.gold,
-  CHART_COLORS.purple,
-  CHART_COLORS.gray,
+  '#4361ee',
+  '#00A67E',
+  '#5DADE2',
+  '#F39C12',
+  '#8E44AD',
 ]
 
 export const CHART_FONT = '"Yekan Bakh", Tahoma, Arial, sans-serif'

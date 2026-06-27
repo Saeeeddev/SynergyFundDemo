@@ -24,7 +24,7 @@ export function SelectedAssetBox({ project }: SelectedAssetBoxProps) {
         {/* Project image */}
         <div className="relative w-20 h-14 rounded-md overflow-hidden shrink-0 bg-surface-2">
           <Image
-            src={project.images[0] ?? '/placeholder-solar.jpg'}
+            src={project.images[0] ?? '/Images/projects/project-1.jpg'}
             alt={project.name}
             fill
             className="object-cover"

@@ -3,8 +3,9 @@
 // [F §4] Portfolio page — all four rows
 // [M §6.4] Phone: 2×2 KPIs → chart → geo → holdings → order history (collapsible)
 
-import { TrendingUp, DollarSign, BarChart2, TrendingDown } from 'lucide-react'
+import { TrendingUp, DollarSign, BarChart2, TrendingDown, Briefcase } from 'lucide-react'
 import { StatCard } from '@/components/ui/StatCard'
+import { PageHeader } from '@/components/ui/PageHeader'
 import { PerformanceChart } from '@/components/portfolio/PerformanceChart'
 import { GeographicalDistribution } from '@/components/portfolio/GeographicalDistribution'
 import { HoldingsTable } from '@/components/portfolio/HoldingsTable'
@@ -14,22 +15,27 @@ import {
   useHoldings,
   usePerformance,
   useGeo,
-  useOrders,
 } from '@/lib/hooks/usePortfolio'
 import { formatToman } from '@/lib/utils/currency'
-import { bidiIsolate, formatPercent } from '@/lib/utils/numbers'
 
 export default function PortfolioPage() {
   const { data: summary, isLoading: summaryLoading, isError: summaryError, refetch: refetchSummary } = usePortfolioSummary()
   const { data: holdings, isLoading: holdingsLoading, isError: holdingsError, refetch: refetchHoldings } = useHoldings()
   const { data: performance, isLoading: perfLoading, isError: perfError, refetch: refetchPerf } = usePerformance()
   const { data: geo, isLoading: geoLoading, isError: geoError, refetch: refetchGeo } = useGeo()
-  const { data: ordersPage, isLoading: ordersLoading, isError: ordersError, refetch: refetchOrders } = useOrders(1)
 
   const netReturnSign = (summary?.netReturnPercent ?? 0) >= 0 ? 'positive' : 'negative'
 
   return (
     <div className="flex flex-col gap-4 p-3 lg:gap-5 lg:p-3">
+
+      {/* asas-style page header — desktop only */}
+      <PageHeader
+        className="hidden lg:flex"
+        icon={<Briefcase size={22} strokeWidth={1.75} />}
+        title="سبد دارایی"
+        subtitle="عملکرد، دارایی‌ها و سوابق معاملات شما"
+      />
 
       {/* Row 1 — 4 KPI cards [F §4 R1] — 2×2 phone / 4-up desktop */}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
@@ -88,13 +94,8 @@ export default function PortfolioPage() {
         onRetry={() => refetchHoldings()}
       />
 
-      {/* Row 4 — Order History [F §4 R4] */}
-      <OrderHistoryTable
-        orders={ordersPage?.data ?? []}
-        isLoading={ordersLoading}
-        isError={ordersError}
-        onRetry={() => refetchOrders()}
-      />
+      {/* Row 4 — Order History [F §4 R4] — self-fetches with its own pagination */}
+      <OrderHistoryTable />
 
     </div>
   )

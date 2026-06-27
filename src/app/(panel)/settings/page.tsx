@@ -4,7 +4,9 @@
 // [M §6.10] Phone: scrollable underline tab strip
 
 import { useState } from 'react'
+import { Settings } from 'lucide-react'
 import { Tabs } from '@/components/ui/Tabs'
+import { PageHeader } from '@/components/ui/PageHeader'
 import { VerificationStatusCard } from '@/components/settings/VerificationStatusCard'
 import { PayoutMethodsCard } from '@/components/settings/PayoutMethodsCard'
 import { PasswordCard } from '@/components/settings/PasswordCard'
@@ -20,6 +22,14 @@ export default function SettingsPage() {
 
   return (
     <div className="flex flex-col gap-4 p-4 lg:gap-5 lg:p-5">
+
+      {/* asas-style page header — desktop only */}
+      <PageHeader
+        className="hidden lg:flex"
+        icon={<Settings size={22} strokeWidth={1.75} />}
+        title="تنظیمات"
+        subtitle="حساب کاربری، هویت، امنیت و دسترسی"
+      />
 
       {/* Underline tabs — scrollable strip on phone [M §6.10, D §9.7] */}
       <Tabs tabs={TABS} value={tab} onChange={setTab} accent="green" />

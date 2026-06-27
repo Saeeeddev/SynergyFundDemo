@@ -5,6 +5,7 @@
 
 import { TrendingUp, Banknote, CalendarCheck, Wallet } from 'lucide-react'
 import { StatCard } from '@/components/ui/StatCard'
+import { PageHeader } from '@/components/ui/PageHeader'
 import { IncomeTimelineChart } from '@/components/income/IncomeTimelineChart'
 import { PayoutHistoryTable } from '@/components/income/PayoutHistoryTable'
 import { PayoutMethodCard } from '@/components/income/PayoutMethodCard'
@@ -28,6 +29,14 @@ export default function IncomePage() {
 
   return (
     <div className="flex flex-col gap-4 p-3 lg:gap-5 lg:p-3">
+
+      {/* asas-style page header — desktop only */}
+      <PageHeader
+        className="hidden lg:flex"
+        icon={<Banknote size={22} strokeWidth={1.75} />}
+        title="درآمدها و پرداخت‌ها"
+        subtitle="سود دریافتی، تاریخچه پرداخت و روش برداشت شما"
+      />
 
       {/* Row 1 — 4 KPI cards [F §5 R1] — 2×2 phone / 4-up desktop */}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">

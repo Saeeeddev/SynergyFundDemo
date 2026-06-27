@@ -4,8 +4,9 @@
 // [M §6.6] Phone: stat → scrollable chip row → search+filter button → stacked doc rows
 
 import { useState } from 'react'
-import { FileBarChart } from 'lucide-react'
+import { FileBarChart, FileText } from 'lucide-react'
 import { StatCard } from '@/components/ui/StatCard'
+import { PageHeader } from '@/components/ui/PageHeader'
 import { CategoryChips, type ReportCategory } from '@/components/reports/CategoryChips'
 import { ReportsFilter, type FilterState } from '@/components/reports/ReportsFilter'
 import { DocumentLibrary } from '@/components/reports/DocumentLibrary'
@@ -22,6 +23,14 @@ export default function ReportsPage() {
 
   return (
     <div className="flex flex-col gap-4 p-3 lg:gap-5 lg:p-3">
+
+      {/* asas-style page header — desktop only */}
+      <PageHeader
+        className="hidden lg:flex"
+        icon={<FileText size={22} strokeWidth={1.75} />}
+        title="گزارش‌ها"
+        subtitle="گزارش‌های فنی و مالی پروژه‌های شما"
+      />
 
       {/* Total reports stat card */}
       <StatCard

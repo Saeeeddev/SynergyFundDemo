@@ -67,16 +67,17 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 
       {/* Row 2 — 75% tabs + 25% calculator
           Phone: calculator comes FIRST (above tabs) [M §6.7]
-          Desktop: RTL flex row — calculator on left (25%), tabs on right (75%) */}
-      <div className="flex flex-col gap-4 lg:grid lg:grid-cols-4 lg:gap-5">
+          Desktop: RTL grid — calculator on left (25%, sticky), tabs on right (75%) */}
+      <div className="flex flex-col gap-4 lg:grid lg:grid-cols-4 lg:gap-5 lg:items-start">
 
-        {/* Calculator — phone: appears above tabs; desktop: left 25% col [M §6.7] */}
-        <div className="lg:col-span-1 lg:order-none order-first">
+        {/* Calculator — phone: above tabs; desktop: left 25% col, sticky so the primary
+            action stays in view while the user reads the tabs [M §6.7] */}
+        <div className="lg:col-span-1 lg:order-none order-first lg:sticky lg:top-3">
           <InvestmentCalculator project={project} />
         </div>
 
         {/* Tabs — phone: below calculator; desktop: right 75% [F §11 R2] */}
-        <div className="bg-surface border border-border rounded-card shadow-[var(--shadow-sm)] p-5 lg:col-span-3">
+        <div className="bg-surface border border-border rounded-card shadow-[var(--shadow-card)] p-5 lg:col-span-3">
           <ProjectTabs project={project} />
         </div>
       </div>

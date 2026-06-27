@@ -11,11 +11,12 @@ export function Card({ hoverLift = false, className, children, ...props }: CardP
   return (
     <div
       className={cn(
-        'bg-surface border border-border rounded-card shadow-[var(--shadow-sm)] p-6',
+        // asas card: white, generously rounded, soft diffuse shadow, hairline border
+        'bg-surface border border-border rounded-card shadow-[var(--shadow-card)] p-6',
         hoverLift && [
           'cursor-pointer',
-          'transition-[box-shadow,border-color] duration-[120ms] ease-out',
-          'hover:shadow-[var(--shadow-md)] hover:border-border-strong',
+          'transition-[box-shadow,transform] duration-200 ease-out motion-reduce:transition-none',
+          'hover:shadow-[var(--shadow-card-hover)] hover:-translate-y-0.5',
         ].join(' '),
         className,
       )}

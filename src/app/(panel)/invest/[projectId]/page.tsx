@@ -130,7 +130,7 @@ export default function InvestPage({ params }: InvestPageProps) {
         // Desktop RTL grid: first child → RIGHT (3 boxes, 2fr), second child → LEFT (ReviewBox, 1fr)
         // Mobile: single column stack — SelectedAsset → Amount → FundingSource → sticky ReviewBox
         // Bottom padding on mobile so the sticky ReviewBox doesn't cover the last card [M §6.8]
-        <div className="flex flex-col gap-4 lg:grid lg:grid-cols-3 lg:gap-5 pb-[280px] lg:pb-0">
+        <div className="flex flex-col gap-4 lg:grid lg:grid-cols-3 lg:gap-5 lg:items-start pb-[280px] lg:pb-0">
 
           {/* RIGHT side (3 stacked boxes) — first in DOM = right in RTL grid [F §10] */}
           <div className="flex flex-col gap-4 lg:col-span-2">
@@ -154,8 +154,9 @@ export default function InvestPage({ params }: InvestPageProps) {
             />
           </div>
 
-          {/* LEFT side (ReviewBox) — second in DOM = left in RTL grid [F §10] */}
-          <div className="lg:col-span-1">
+          {/* LEFT side (ReviewBox) — second in DOM = left in RTL grid [F §10].
+              Sticky on desktop so the live summary + CTA stay visible while editing. */}
+          <div className="lg:col-span-1 lg:sticky lg:top-3">
             <InvestmentReviewBox
               shares={shares}
               ownershipPct={ownershipPct}

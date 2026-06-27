@@ -1,24 +1,15 @@
 'use client'
 
-// [F §5 R2] Income Row 2: Monthly bar chart with range selector
-// [D §10] Gold bars, energy identity, SegmentedControl for time range
+// [F §5 R2] "درآمد ماهانه" — asas SolarResource-style monthly bar chart showing
+// ALL months (no range filter, no hidden labels).
 
-import { useState } from 'react'
-import { BarChart } from '@/components/charts/BarChart'
-import { SegmentedControl, SegmentOption } from '@/components/ui/SegmentedControl'
+import { MonthlyBarChart, type MonthlyBarDatum } from '@/components/charts/MonthlyBarChart'
 import { Card } from '@/components/ui/Card'
+import { SectionTitle } from '@/components/ui/SectionTitle'
 import { formatTomanCompact } from '@/lib/utils/currency'
+import { Skeleton } from '@/components/ui/Skeleton'
+import { ErrorState } from '@/components/ui/ErrorState'
 import type { IncomeSummary } from '@/lib/schemas/payout'
-
-type Range = '6m' | '1y' | 'all'
-
-const RANGE_OPTIONS: SegmentOption<Range>[] = [
-  { value: '6m', label: '۶ ماه' },
-  { value: '1y', label: '۱ سال' },
-  { value: 'all', label: 'همه' },
-]
-
-const RANGE_COUNT: Record<Range, number> = { '6m': 6, '1y': 12, 'all': 9999 }
 
 interface IncomeTimelineChartProps {
   monthlyBars: IncomeSummary['monthlyBars']
@@ -33,26 +24,24 @@ export function IncomeTimelineChart({
   isError,
   onRetry,
 }: IncomeTimelineChartProps) {
-  const [range, setRange] = useState<Range>('6m')
-
-  const sliced = monthlyBars.slice(-RANGE_COUNT[range])
-  const chartData = sliced.map((b) => ({ name: b.month, y: b.amount }))
+  const data: MonthlyBarDatum[] = monthlyBars.map((b) => ({
+    label: b.month,
+    value: b.amount,
+  }))
 
   return (
-    <Card className="flex flex-col gap-4 h-full">
-      <div className="flex items-center justify-between gap-3 flex-wrap">
-        <h2 className="text-[15px] font-semibold text-text">درآمد ماهانه</h2>
-        <SegmentedControl options={RANGE_OPTIONS} value={range} onChange={setRange} />
-      </div>
-      <BarChart
-        data={chartData}
-        height={260}
-        yFormatter={formatTomanCompact}
-        tooltipFormatter={formatTomanCompact}
-        isLoading={isLoading}
-        isError={isError}
-        onRetry={onRetry}
-      />
+    <Card className="flex flex-col gap-5 h-full">
+      <SectionTitle title="درآمد ماهانه" subtitle="درآمد دریافتی شما به تفکیک ماه" />
+
+      {isLoading ? (
+        <Skeleton className="h-[260px] w-full rounded-card" />
+      ) : isError ? (
+        <div className="flex items-center justify-center h-[260px]">
+          <ErrorState scope="inline" onRetry={onRetry} />
+        </div>
+      ) : (
+        <MonthlyBarChart data={data} height={240} valueFormatter={formatTomanCompact} barSize="fat" />
+      )}
     </Card>
   )
 }

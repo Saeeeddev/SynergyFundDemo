@@ -41,7 +41,10 @@ export function StatCard({
   return (
     <div
       className={cn(
-        'bg-surface border border-border rounded-card shadow-[var(--shadow-sm)]',
+        // asas metric card: soft diffuse shadow, gentle hover lift
+        'bg-surface border border-border rounded-card shadow-[var(--shadow-card)]',
+        'transition-[box-shadow,transform] duration-200 ease-out motion-reduce:transition-none',
+        'hover:shadow-[var(--shadow-card-hover)] hover:-translate-y-0.5',
         'flex flex-col gap-2',
         compact ? 'p-4' : 'p-5',
         className,

@@ -1,13 +1,13 @@
 'use client'
 
-// [F §4 R2 left] Portfolio Row 2 left (30%): city list with ownership-share bars
-// [D §9.10] ListRow-like pattern: city name + ownership% bar
-// [M §6.4] Full-width below chart on phone
+// [F §4 R2 left] "توزیع جغرافیایی" — donut chart of the portfolio's distribution
+// across cities + a legend list (swatch · city · %).
 
+import { DonutChart } from '@/components/charts/DonutChart'
 import { Card } from '@/components/ui/Card'
-import { ProgressBar } from '@/components/ui/ProgressBar'
-import { Skeleton } from '@/components/ui/Skeleton'
+import { SectionTitle } from '@/components/ui/SectionTitle'
 import { ErrorState } from '@/components/ui/ErrorState'
+import { CATEGORICAL_COLORS } from '@/lib/utils/highchartsBase'
 import { bidiIsolate, formatPercent } from '@/lib/utils/numbers'
 import type { GeoDistribution } from '@/lib/schemas/portfolio'
 
@@ -19,40 +19,42 @@ interface GeographicalDistributionProps {
 }
 
 export function GeographicalDistribution({ data, isLoading, isError, onRetry }: GeographicalDistributionProps) {
+  const donutData = data.map((d) => ({ name: d.city, y: d.ownershipPercent }))
+
   return (
-    <Card className="flex flex-col gap-4 h-full">
-      <h2 className="text-[15px] font-semibold text-text">توزیع جغرافیایی</h2>
+    <Card className="flex flex-col gap-5 h-full">
+      <SectionTitle title="توزیع جغرافیایی" subtitle="سهم هر شهر از سبد دارایی شما" />
 
-      {isLoading && (
-        <div className="flex flex-col gap-3">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="skeleton h-12 rounded-md" />
-          ))}
-        </div>
-      )}
+      <div className="flex flex-col gap-5">
+        <DonutChart
+          data={donutData}
+          centerText={bidiIsolate(`${data.length} شهر`)}
+          showLegend={false}
+          height={200}
+          isLoading={isLoading}
+          isError={isError}
+          onRetry={onRetry}
+        />
 
-      {!isLoading && isError && (
-        <ErrorState scope="inline" onRetry={onRetry} />
-      )}
-
-      {!isLoading && !isError && (
-        <div className="flex flex-col gap-3">
-          {data.map((item) => (
-            <div key={item.city} className="flex flex-col gap-1.5">
-              <div className="flex items-center justify-between">
-                <span className="text-[14px] font-medium text-text">{item.city}</span>
-                <span className="text-[13px] tabular-nums text-text-muted">
+        {!isLoading && !isError && (
+          <div className="flex flex-col gap-2">
+            {data.map((item, i) => (
+              <div key={item.city} className="flex items-center gap-2 text-[13px]">
+                <span
+                  className="w-3 h-3 rounded-sm shrink-0"
+                  style={{ backgroundColor: CATEGORICAL_COLORS[i % CATEGORICAL_COLORS.length] }}
+                />
+                <span className="flex-1 text-text truncate">{item.city}</span>
+                <span className="font-semibold text-text-2 tabular-nums">
                   {bidiIsolate(formatPercent(item.ownershipPercent))}
                 </span>
               </div>
-              <ProgressBar
-                value={item.ownershipPercent}
-                role="info"
-              />
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+
+        {!isLoading && isError && <ErrorState scope="inline" onRetry={onRetry} />}
+      </div>
     </Card>
   )
 }

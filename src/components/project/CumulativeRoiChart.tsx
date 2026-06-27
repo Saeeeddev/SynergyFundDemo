@@ -80,10 +80,11 @@ export function CumulativeRoiChart({ yearlyData, investedAmount }: CumulativeRoi
       title: { text: '' },
       xAxis: {
         categories,
-        reversed: true,
+        reversed: false, // LTR: year 1 on the left → latest on the right
         lineColor: 'transparent',
         tickColor: 'transparent',
-        labels: { style: { color: CHART_COLORS.textSubtle, fontSize: '11px', fontFamily: CHART_FONT } },
+        // step:1 → never skip a year label (fixes hidden dates)
+        labels: { step: 1, style: { color: CHART_COLORS.textSubtle, fontSize: '11px', fontFamily: CHART_FONT } },
         plotLines,
       },
       yAxis: {

@@ -127,7 +127,7 @@ export default function SellPage({ params }: SellPageProps) {
         // Same RTL grid pattern as Invest:
         // first DOM child → RIGHT (3 boxes), second → LEFT (SellReviewBox)
         // Mobile: stacked + sticky bottom CTA bar
-        <div className="flex flex-col gap-4 lg:grid lg:grid-cols-3 lg:gap-5 pb-[290px] lg:pb-0">
+        <div className="flex flex-col gap-4 lg:grid lg:grid-cols-3 lg:gap-5 lg:items-start pb-[290px] lg:pb-0">
 
           {/* RIGHT: 3 stacked boxes */}
           <div className="flex flex-col gap-4 lg:col-span-2">
@@ -150,8 +150,8 @@ export default function SellPage({ params }: SellPageProps) {
             />
           </div>
 
-          {/* LEFT: SellReviewBox */}
-          <div className="lg:col-span-1">
+          {/* LEFT: SellReviewBox — sticky on desktop so the live summary + CTA stay visible */}
+          <div className="lg:col-span-1 lg:sticky lg:top-3">
             <SellReviewBox
               quantity={parsedQty}
               proceeds={proceeds}

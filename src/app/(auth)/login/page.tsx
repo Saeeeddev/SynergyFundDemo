@@ -49,7 +49,7 @@ export default function LoginPage() {
             </svg>
           </div>
           <span className="text-[15px] font-semibold text-text leading-none">
-            سینرجی فاند
+           synergy1
           </span>
         </div>
 

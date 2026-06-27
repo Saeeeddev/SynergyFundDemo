@@ -50,10 +50,11 @@ export function YearlyIncomeChart({ yearlyData }: YearlyIncomeChartProps) {
     title: { text: '' },
     xAxis: {
       categories: yearlyData.map((d) => `سال ${d.year}`),
-      reversed: true,
+      reversed: false, // LTR: year 1 on the left → latest on the right
       lineColor: 'transparent',
       tickColor: 'transparent',
-      labels: { style: { color: CHART_COLORS.textSubtle, fontSize: '11px', fontFamily: CHART_FONT } },
+      // step:1 → never skip a year label (fixes hidden dates)
+      labels: { step: 1, style: { color: CHART_COLORS.textSubtle, fontSize: '11px', fontFamily: CHART_FONT } },
     },
     yAxis: {
       title: { text: '' },
