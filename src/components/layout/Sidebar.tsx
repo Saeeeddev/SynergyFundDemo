@@ -41,7 +41,7 @@ export function SidebarLogo() {
   return (
     <div className="flex items-center px-5 h-16 shrink-0">
       <Image
-        src="/Images/SynergyFundLogoIconLeft.jpg"
+        src="/Images/synergyfundlogotransparent.png"
         alt="سینرژی"
         width={737}
         height={258}
