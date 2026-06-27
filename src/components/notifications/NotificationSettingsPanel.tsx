@@ -32,14 +32,14 @@ function ToggleRow({ label, description, enabled, onChange }: ToggleRowProps) {
       >
         <span
           className={cn(
-            'relative inline-flex h-6 w-11 items-center rounded-pill transition-colors duration-200',
+            'relative inline-flex h-6 w-11 rounded-pill transition-colors duration-200',
             enabled ? 'bg-green-base' : 'bg-border-strong',
           )}
         >
           <span
             className={cn(
-              'absolute h-5 w-5 rounded-pill bg-surface shadow transition-all duration-200',
-              enabled ? 'translate-x-[-1.25rem] rtl:translate-x-[1.25rem]' : 'translate-x-[-0.125rem] rtl:translate-x-[0.125rem]',
+              'absolute top-[2px] h-5 w-5 rounded-pill bg-surface shadow transition-all duration-200',
+              enabled ? 'end-[2px]' : 'start-[2px]',
             )}
           />
         </span>

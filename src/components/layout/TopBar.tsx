@@ -2,43 +2,34 @@
 
 import { useState } from 'react'
 import { usePathname } from 'next/navigation'
-import Link from 'next/link'
 import { Menu, Search, X } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { SearchField } from '@/components/ui/SearchField'
-import { NotificationDropdown } from './NotificationDropdown'
-import { ProfileDropdown } from './ProfileDropdown'
 import { useNotifications, useUnreadCount } from '@/lib/hooks/useNotifications'
 import { useMe } from '@/lib/hooks/useAuth'
 
-// Breadcrumb definitions per route segment [F §1.2]
-type Crumb = { label: string; href?: string }
+// Mobile page title per route segment
+type Crumb = { label: string }
 
-const BREADCRUMBS: Record<string, Crumb[]> = {
-  '/dashboard':    [{ label: 'داشبورد' }],
-  '/marketplace':  [{ label: 'فرصت‌های سرمایه‌گذاری' }],
-  '/portfolio':    [{ label: 'سبد دارایی' }],
-  '/income':       [{ label: 'درآمدها و پرداخت‌ها' }],
-  '/reports':      [{ label: 'گزارش‌ها' }],
-  '/settings':     [{ label: 'تنظیمات' }],
-  '/notifications':[{ label: 'اعلان‌ها' }],
-  '/profile':      [{ label: 'پروفایل' }],
-  '/verification': [{ label: 'تأیید هویت' }],
-  '/project':      [{ label: 'فرصت‌های سرمایه‌گذاری', href: '/marketplace' }, { label: 'جزئیات پروژه' }],
-  '/invest':       [{ label: 'فرصت‌های سرمایه‌گذاری', href: '/marketplace' }, { label: 'سرمایه‌گذاری' }],
-  '/sell':         [{ label: 'فرصت‌های سرمایه‌گذاری', href: '/marketplace' }, { label: 'فروش' }],
+const PAGE_TITLES: Record<string, string> = {
+  '/dashboard':    'داشبورد',
+  '/marketplace':  'فرصت‌های سرمایه‌گذاری',
+  '/portfolio':    'سبد دارایی',
+  '/income':       'درآمدها و پرداخت‌ها',
+  '/reports':      'گزارش‌ها',
+  '/settings':     'تنظیمات',
+  '/notifications':'اعلان‌ها',
+  '/profile':      'پروفایل',
+  '/verification': 'تأیید هویت',
+  '/project':      'جزئیات پروژه',
+  '/invest':       'سرمایه‌گذاری',
+  '/sell':         'فروش',
 }
 
-function useBreadcrumbs(): Crumb[] {
+function usePageTitle(): string {
   const pathname = usePathname()
   const segment = '/' + (pathname.split('/')[1] ?? '')
-  return BREADCRUMBS[segment] ?? [{ label: 'پنل مدیریت' }]
-}
-
-// Mobile page title (still just the leaf label)
-function usePageTitle(): string {
-  const crumbs = useBreadcrumbs()
-  return crumbs[crumbs.length - 1]?.label ?? 'پنل مدیریت'
+  return PAGE_TITLES[segment] ?? 'پنل مدیریت'
 }
 
 interface TopBarProps {
@@ -53,66 +44,13 @@ export function TopBar({ onOpenDrawer }: TopBarProps) {
   const { data: notifications = [] } = useNotifications()
   const unreadCount = useUnreadCount()
   const { data: user = null } = useMe()
-  const breadcrumbs = useBreadcrumbs()
   const pageTitle = usePageTitle()
 
   const initials = (user?.name ?? 'م').charAt(0)
 
   return (
     <>
-      {/* ── Desktop top bar (lg+) ───────────────────────────────────────────── */}
-      {/*
-        RTL flex order: first element → visual RIGHT, last → visual LEFT
-        RIGHT: [breadcrumb] | [search flex-1] | [bell] [profile] :LEFT
-      */}
-      <header className="hidden lg:flex items-center h-16 px-5 gap-4 shrink-0 bg-bg">
-        {/* Breadcrumb navigation — visual right in RTL */}
-        <nav aria-label="مسیر" className="flex items-center gap-1.5 shrink-0">
-          {breadcrumbs.map((crumb, i) => (
-            <span key={i} className="flex items-center gap-1.5">
-              {i > 0 && (
-                <span className="text-text-subtle text-[13px] select-none">/</span>
-              )}
-              {crumb.href ? (
-                <Link
-                  href={crumb.href}
-                  className="text-[13px] text-text-muted hover:text-text transition-colors duration-[120ms]"
-                >
-                  {crumb.label}
-                </Link>
-              ) : (
-                <span className="text-[15px] font-semibold text-text">
-                  {crumb.label}
-                </span>
-              )}
-            </span>
-          ))}
-        </nav>
-
-        {/* Search field — flex-1 centers it between breadcrumb and actions */}
-        <div className="flex-1 flex justify-center">
-          <SearchField className="w-full max-w-xs" />
-        </div>
-
-        {/* Notification + Profile group — visual left in RTL, pe-3 keeps them off the edge */}
-        <div className="flex items-center gap-2 pe-3">
-          <NotificationDropdown
-            notifications={notifications}
-            unreadCount={unreadCount}
-            open={notifOpen}
-            onToggle={() => setNotifOpen((o) => !o)}
-            onClose={() => setNotifOpen(false)}
-          />
-          <ProfileDropdown
-            user={user}
-            open={profileOpen}
-            onToggle={() => setProfileOpen((o) => !o)}
-            onClose={() => setProfileOpen(false)}
-          />
-        </div>
-      </header>
-
-      {/* ── Mobile compact header (<lg) ────────────────────────────────────────── */}
+      {/* ── Mobile compact header (<lg) ─────────────────────────────────────────── */}
       <header className="mobile-header lg:hidden flex items-center h-14 px-3 gap-2 shrink-0 sticky top-0 z-30">
         <button
           onClick={onOpenDrawer}
@@ -159,7 +97,7 @@ export function TopBar({ onOpenDrawer }: TopBarProps) {
         </button>
       </header>
 
-      {/* ── Search overlay (mobile) ─────────────────────────────────────────── */}
+      {/* ── Search overlay (mobile) ──────────────────────────────────────────────── */}
       {searchOpen && (
         <div className="lg:hidden fixed inset-0 z-50 bg-surface flex flex-col">
           <div className="flex items-center gap-2 px-4 h-14 border-b border-border">
@@ -174,7 +112,7 @@ export function TopBar({ onOpenDrawer }: TopBarProps) {
         </div>
       )}
 
-      {/* ── Mobile notification bottom sheet ─────────────────────────────────── */}
+      {/* ── Mobile notification bottom sheet ────────────────────────────────────── */}
       {notifOpen && (
         <MobileSheet title="اعلان‌ها" onClose={() => setNotifOpen(false)}>
           {notifications.length === 0 ? (
@@ -222,7 +160,7 @@ export function TopBar({ onOpenDrawer }: TopBarProps) {
         </MobileSheet>
       )}
 
-      {/* ── Mobile profile bottom sheet ───────────────────────────────────────── */}
+      {/* ── Mobile profile bottom sheet ──────────────────────────────────────────── */}
       {profileOpen && (
         <MobileSheet title="حساب کاربری" onClose={() => setProfileOpen(false)}>
           <div className="flex items-center gap-3 px-4 py-4 border-b border-border">

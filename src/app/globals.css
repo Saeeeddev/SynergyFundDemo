@@ -116,8 +116,10 @@
 @media (min-width: 768px) {
   .content-box {
     margin: 8px;
-    margin-top: 0;
-    border-radius: var(--r-main);
+    margin-top: 12px;
+    margin-bottom: 0;
+    /* Only round the top corners; bottom-left and bottom-right are flush */
+    border-radius: var(--r-main) var(--r-main) 0 0;
     border: 1px solid var(--border);
     box-shadow: var(--shadow-sm);
     /* Inset content from the scrollbar edge (scrollbar is on left in RTL) */
@@ -150,6 +152,27 @@
 /* Legacy alias — kept for any markup that still uses .app-main */
 .app-main {
   background: var(--surface);
+}
+
+/* Sidebar pane — sticky, thin scrollbar when items overflow */
+.sidebar-pane {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(103,94,93,0.3) transparent;
+}
+.sidebar-pane::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar-pane::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar-pane::-webkit-scrollbar-thumb {
+  background: rgba(103,94,93,0.22);
+  border-radius: 999px;
+}
+.sidebar-pane::-webkit-scrollbar-button {
+  display: none;
+  height: 0;
+  width: 0;
 }
 
 /* Safe-area aware pinned elements (MOBILE.md §10) */

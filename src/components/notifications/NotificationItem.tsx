@@ -1,12 +1,12 @@
 'use client'
 
 // [F §8, D §9.14] Notification item: role icon chip + title + snippet + timestamp
-// Gold=payout, Green=performance
 
 import { cn } from '@/lib/utils/cn'
 import { formatJalali } from '@/lib/utils/jalali'
 import { TrendingUp, Clock } from 'lucide-react'
 import type { Notification } from '@/lib/schemas/user'
+import { useMarkAsRead } from '@/lib/hooks/useNotifications'
 
 const TYPE_CONFIG = {
   payout: {
@@ -25,6 +25,7 @@ interface NotificationItemProps {
 
 export function NotificationItem({ notification: n }: NotificationItemProps) {
   const { icon: Icon, classes } = TYPE_CONFIG[n.type]
+  const { mutate: markAsRead, isPending } = useMarkAsRead()
 
   return (
     <div
@@ -49,7 +50,18 @@ export function NotificationItem({ notification: n }: NotificationItemProps) {
           )}
         </div>
         <p className="text-[13px] text-text-muted mt-0.5 line-clamp-2">{n.body}</p>
-        <p className="text-[11px] text-text-subtle mt-1 tabular-nums">{formatJalali(n.timestamp)}</p>
+        <div className="flex items-center justify-between mt-1 gap-2">
+          <p className="text-[11px] text-text-subtle tabular-nums">{formatJalali(n.timestamp)}</p>
+          {!n.read && (
+            <button
+              onClick={() => markAsRead(n.id)}
+              disabled={isPending}
+              className="text-[11px] text-info hover:underline disabled:opacity-50 shrink-0"
+            >
+              علامت‌گذاری به‌عنوان خوانده‌شده
+            </button>
+          )}
+        </div>
       </div>
     </div>
   )

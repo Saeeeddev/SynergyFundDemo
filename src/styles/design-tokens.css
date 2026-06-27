@@ -7,8 +7,8 @@
 
 :root {
   /* ---- Surfaces & neutrals ---- */
-  --bg: #F5F6F8;
-  --surface: #FFFFFF;
+  --bg:   #F5F6F8;
+  --surface:#FFFFFF;
   --surface-2: #FAFBFC;
   --border: #E8EAED;
   --border-strong: #D1D5DB;

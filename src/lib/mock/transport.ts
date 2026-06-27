@@ -5,6 +5,7 @@
 // to force every call to reject — useful for testing error/retry states.
 
 import type { Paginated } from "@/types/api";
+import type { Notification } from '@/lib/schemas/user';
 import {
   MOCK_PROJECTS,
   MOCK_DASHBOARD,
@@ -122,8 +123,22 @@ export const mockAuth = {
 
 // ─── Notifications ────────────────────────────────────────────────────────────
 
+let _notifications: Notification[] = [...MOCK_NOTIFICATIONS]
+
 export const mockNotifications = {
-  list: () => call(() => MOCK_NOTIFICATIONS),
+  list: () => call(() => [..._notifications]),
+  markAsRead: (id: string) =>
+    call(() => {
+      _notifications = _notifications.map((n) =>
+        n.id === id ? { ...n, read: true } : n,
+      )
+      return true
+    }),
+  markAllAsRead: () =>
+    call(() => {
+      _notifications = _notifications.map((n) => ({ ...n, read: true }))
+      return true
+    }),
 };
 
 // ─── Investments (buy / sell mutations) ───────────────────────────────────────
