@@ -5,25 +5,27 @@
 // [M §6.7] Phone: placed ABOVE the tabs (directly under stats)
 // [D §9.18] Inset well with Green accent
 
-import { useState, useCallback } from 'react'
+import { useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { Calculator } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { formatToman, formatTomanCompact } from '@/lib/utils/currency'
-import { formatNumber, formatPercent } from '@/lib/utils/numbers'
+import { formatNumber, formatPercent, groupDigits, onlyDigits } from '@/lib/utils/numbers'
 import type { Project } from '@/types/domain'
 
 interface InvestmentCalculatorProps {
   project: Project
+  /** Raw digit string — controlled, shared with the ROI forecast + Invest flow */
+  amount: string
+  onAmountChange: (raw: string) => void
 }
 
-export function InvestmentCalculator({ project }: InvestmentCalculatorProps) {
+export function InvestmentCalculator({ project, amount, onAmountChange }: InvestmentCalculatorProps) {
   const router = useRouter()
-  const [amount, setAmount] = useState('')
 
-  const numAmount = parseFloat(amount.replace(/[^0-9.]/g, '')) || 0
+  const numAmount = parseFloat(onlyDigits(amount)) || 0
   const shares = project.sharePrice > 0 ? Math.floor(numAmount / project.sharePrice) : 0
   const totalWatts = project.totalCapacityWatts
   const ownershipPct = totalWatts > 0 ? (shares / totalWatts) * 100 : 0
@@ -31,17 +33,18 @@ export function InvestmentCalculator({ project }: InvestmentCalculatorProps) {
   const monthlyPayout = annualIncome / 12
 
   const handleAmountChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value.replace(/[^0-9]/g, '')
-    setAmount(raw)
-  }, [])
+    onAmountChange(onlyDigits(e.target.value))
+  }, [onAmountChange])
 
   const isValid = numAmount >= project.minInvestment && shares > 0
 
   return (
-    <Card className="flex flex-col gap-4 p-5">
+    // Taller floating card: holds its height in the reserved right-side column
+    // even before results show, so the column stays a stable "always there" panel.
+    <Card className="flex flex-col gap-4 p-5 lg:min-h-[520px]">
       {/* Header */}
       <div className="flex items-center gap-2">
-        <span className="w-8 h-8 rounded-chip bg-green-tint text-green-deep flex items-center justify-center shrink-0">
+        <span className="w-8 h-8 rounded-chip bg-[var(--sidebar-hover)] text-[var(--sidebar-active)] flex items-center justify-center shrink-0">
           <Calculator size={16} />
         </span>
         <h3 className="text-[15px] font-semibold text-text">ماشین‌حساب سرمایه‌گذاری</h3>
@@ -52,7 +55,8 @@ export function InvestmentCalculator({ project }: InvestmentCalculatorProps) {
         label="مبلغ سرمایه‌گذاری (تومان)"
         placeholder="مبلغ را وارد کنید"
         inputMode="numeric"
-        value={amount}
+        dir="ltr"
+        value={groupDigits(amount)}
         onChange={handleAmountChange}
         helper={`حداقل: ${formatTomanCompact(project.minInvestment)}`}
       />
@@ -67,13 +71,13 @@ export function InvestmentCalculator({ project }: InvestmentCalculatorProps) {
         </div>
       )}
 
-      {/* Invest Now button — navigates to /invest/[projectId] */}
+      {/* Invest Now — carries the entered amount through to the Invest flow */}
       <Button
         variant="primary"
         size="wide"
         fullWidth
         disabled={!isValid}
-        onClick={() => router.push(`/invest/${project.id}`)}
+        onClick={() => router.push(`/invest/${project.id}?amount=${onlyDigits(amount)}`)}
       >
         سرمایه‌گذاری کنید
       </Button>

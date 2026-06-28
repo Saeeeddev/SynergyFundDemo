@@ -6,7 +6,7 @@
 // Row 2: ProjectTabs (75%) + InvestmentCalculator (25%) — phone: calculator ABOVE tabs [M §6.7]
 // Row 3: RoiForecastSection (full width)
 
-import { use } from 'react'
+import { use, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { useProject } from '@/lib/hooks/useProjects'
@@ -16,6 +16,7 @@ import { InvestmentCalculator } from '@/components/project/InvestmentCalculator'
 import { RoiForecastSection } from '@/components/project/RoiForecastSection'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { ErrorState } from '@/components/ui/ErrorState'
+import { BackButton } from '@/components/ui/BackButton'
 
 interface ProjectPageProps {
   params: Promise<{ projectId: string }>
@@ -25,6 +26,10 @@ export default function ProjectPage({ params }: ProjectPageProps) {
   const { projectId } = use(params)
   const router = useRouter()
   const { data: project, isLoading, isError } = useProject(projectId)
+
+  // Investment amount is shared between the calculator and the ROI forecast so
+  // both reflect the same figure (and it carries through to the Invest flow). [F §11]
+  const [amount, setAmount] = useState('')
 
   // Dynamic guard: redirect to /marketplace if project not found [A §3.5, F §0.3]
   useEffect(() => {
@@ -62,6 +67,8 @@ export default function ProjectPage({ params }: ProjectPageProps) {
   return (
     <div className="flex flex-col gap-4 p-3 lg:gap-5 lg:p-3">
 
+      <BackButton href="/marketplace" label="بازگشت به فرصت‌های سرمایه‌گذاری" />
+
       {/* Row 1 — full width: header + images + 4 stats [F §11 R1] */}
       <ProjectHeader project={project} />
 
@@ -73,7 +80,7 @@ export default function ProjectPage({ params }: ProjectPageProps) {
         {/* Calculator — phone: above tabs; desktop: left 25% col, sticky so the primary
             action stays in view while the user reads the tabs [M §6.7] */}
         <div className="lg:col-span-1 lg:order-none order-first lg:sticky lg:top-3">
-          <InvestmentCalculator project={project} />
+          <InvestmentCalculator project={project} amount={amount} onAmountChange={setAmount} />
         </div>
 
         {/* Tabs — phone: below calculator; desktop: right 75% [F §11 R2] */}
@@ -83,7 +90,7 @@ export default function ProjectPage({ params }: ProjectPageProps) {
       </div>
 
       {/* Row 3 — full width: ROI Forecast [F §11 R3] */}
-      <RoiForecastSection project={project} />
+      <RoiForecastSection project={project} amount={amount} />
     </div>
   )
 }

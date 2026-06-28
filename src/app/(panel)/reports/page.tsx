@@ -32,21 +32,21 @@ export default function ReportsPage() {
         subtitle="گزارش‌های فنی و مالی پروژه‌های شما"
       />
 
-      {/* Total reports stat card */}
-      <StatCard
-        label="مجموع گزارش‌ها"
-        value={totalQ.isLoading ? '…' : bidiIsolate(String(total))}
-        icon={<FileBarChart size={20} />}
-        role="info"
-        compact
-        className="max-w-xs"
-      />
+      {/* Toolbar row: total stat (start) + search (end) on one line [F §6] */}
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <StatCard
+          label="مجموع گزارش‌ها"
+          value={totalQ.isLoading ? '…' : bidiIsolate(String(total))}
+          icon={<FileBarChart size={20} />}
+          role="info"
+          compact
+          className="w-full lg:max-w-xs"
+        />
+        <ReportsFilter value={filter} onChange={setFilter} />
+      </div>
 
       {/* Category chips [F §6] */}
       <CategoryChips value={category} onChange={setCategory} />
-
-      {/* Filter bar — inline on md+, bottom sheet on phone [M §6.6] */}
-      <ReportsFilter value={filter} onChange={setFilter} />
 
       {/* Document library [F §6] */}
       <DocumentLibrary category={category} filter={filter} />

@@ -18,6 +18,8 @@ interface MonthlyBarChartProps {
   valueFormatter?: (n: number) => string
   /** 'fat' = chunky bars (e.g. درآمد ماهانه), 'normal' = slim bars */
   barSize?: 'normal' | 'fat'
+  /** Tilt x-axis labels ~45° so dense date labels stay readable under each bar */
+  rotateLabels?: boolean
   className?: string
 }
 
@@ -28,6 +30,7 @@ export function MonthlyBarChart({
   height = 220,
   valueFormatter = (n) => String(n),
   barSize = 'normal',
+  rotateLabels = false,
   className,
 }: MonthlyBarChartProps) {
   const max = Math.max(...data.map((d) => d.value), 1)
@@ -80,11 +83,22 @@ export function MonthlyBarChart({
       {/* X-axis labels (aligned under the plot, offset by the y-axis width) */}
       <div className="flex">
         <div className="w-14 shrink-0" />
-        <div className="flex flex-1 justify-between gap-1.5 px-1 pt-2">
+        <div
+          className={cn(
+            'flex flex-1 gap-1.5 px-1',
+            rotateLabels ? 'h-12 items-start pt-2' : 'justify-between pt-2',
+          )}
+        >
           {data.map((d, i) => (
             <span
               key={i}
-              className="flex-1 truncate text-center text-[10px] font-medium text-text-muted tabular-nums"
+              className={cn(
+                'text-[10px] font-medium text-text-muted tabular-nums',
+                rotateLabels
+                  // ~45° tilt so each full date sits under its own bar
+                  ? 'flex-1 origin-top -rotate-45 whitespace-nowrap text-center'
+                  : 'flex-1 truncate text-center',
+              )}
             >
               {d.label}
             </span>

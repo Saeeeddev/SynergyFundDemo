@@ -37,7 +37,6 @@ export function AssetAllocationChart({ data, isLoading, isError, onRetry }: Asse
         <div className="lg:flex-1">
           <DonutChart
             data={donutData}
-            centerText={formatTomanCompact(total)}
             showLegend={false}
             height={220}
             isLoading={isLoading}

@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
+import { Spinner } from '@/components/ui/Spinner'
 import { loginAction } from './actions'
 
 interface FormValues {
@@ -33,15 +34,17 @@ export function LoginForm() {
     try {
       const result = await loginAction(data.username, data.password)
       if (result.ok) {
-        // Cookie is set; push to dashboard and refresh server state
+        // Cookie is set; push to dashboard and refresh server state.
+        // Keep isPending=true so the spinner shows while the dashboard loads —
+        // navigation can take a moment on slow connections. [F §0.1]
         router.push('/dashboard')
         router.refresh()
       } else {
         setServerError(result.error)
+        setIsPending(false)
       }
     } catch {
-      setServerError('خطایی رخ داده است. لطفاً دوباره تلاش کنید.')
-    } finally {
+      setServerError('خطایی رخ داده است. اتصال اینترنت خود را بررسی کنید.')
       setIsPending(false)
     }
   }
@@ -80,6 +83,7 @@ export function LoginForm() {
         type="submit"
         fullWidth
         disabled={isPending}
+        icon={isPending ? <Spinner size={18} /> : undefined}
       >
         {isPending ? 'در حال ورود…' : 'ورود'}
       </Button>

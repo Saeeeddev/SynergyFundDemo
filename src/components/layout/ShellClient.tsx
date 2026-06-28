@@ -5,6 +5,7 @@ import { Sidebar } from './Sidebar'
 import { TopBar } from './TopBar'
 import { MobileBottomNav } from './MobileBottomNav'
 import { MobileDrawer } from './MobileDrawer'
+import { NavProgressProvider } from './NavProgress'
 
 interface ShellClientProps {
   children: React.ReactNode
@@ -14,7 +15,7 @@ export default function ShellClient({ children }: ShellClientProps) {
   const [drawerOpen, setDrawerOpen] = useState(false)
 
   return (
-    <>
+    <NavProgressProvider>
       {/*
         Outer: full-viewport gray field (#F7F7F7 = --bg).
         In RTL: sidebar (first DOM element) appears on the RIGHT [D §6.1].
@@ -40,6 +41,6 @@ export default function ShellClient({ children }: ShellClientProps) {
       {/* Mobile shell — bottom tab bar + drawer (hidden at lg+) */}
       <MobileBottomNav onOpenDrawer={() => setDrawerOpen(true)} />
       <MobileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
-    </>
+    </NavProgressProvider>
   )
 }

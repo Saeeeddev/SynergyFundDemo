@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { LayoutDashboard, Store, Briefcase, Banknote, Menu } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
+import { NavPendingReporter } from './NavProgress'
 
 // Primary destinations in the bottom nav — right→left in RTL [M §3.1]
 // Reports & Settings go into the "More" drawer (only 5 slots available)
@@ -59,6 +60,7 @@ export function MobileBottomNav({ onOpenDrawer }: MobileBottomNavProps) {
                 />
               </span>
               <span className="text-[10px] font-medium">{label}</span>
+              <NavPendingReporter />
             </Link>
           )
         })}

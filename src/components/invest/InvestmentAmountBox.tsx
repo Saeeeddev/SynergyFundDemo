@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { formatToman } from '@/lib/utils/currency'
-import { formatNumber, formatCompact, bidiIsolate } from '@/lib/utils/numbers'
+import { formatNumber, formatCompact, bidiIsolate, groupDigits, onlyDigits } from '@/lib/utils/numbers'
 import type { Project } from '@/types/domain'
 
 // [F §10 Step1 Right-middle] Amount input + presets + green investment summary
@@ -56,8 +56,8 @@ export function InvestmentAmountBox({
       {/* Amount input [D §9.18, M §7.5] */}
       <Input
         label="مبلغ (تومان)"
-        value={amount}
-        onChange={e => onAmountChange(e.target.value.replace(/[^0-9]/g, ''))}
+        value={groupDigits(amount)}
+        onChange={e => onAmountChange(onlyDigits(e.target.value))}
         inputMode="numeric"
         placeholder="مبلغ را وارد کنید"
         error={amountError}

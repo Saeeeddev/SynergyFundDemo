@@ -1,17 +1,19 @@
 'use client'
 
-// [F §11 R3] ROI Forecast Section wrapper
-// Controls → 4 Summary Cards → 3 Charts → Assumptions Panel
-// [M §6.7] Phone: controls stack, 2x2 summary, stacked full-width charts, assumptions collapsed
+// [F §11 R3] ROI Forecast Section
+// Fixed 25-year horizon, single (base) scenario. The investment amount comes from
+// the shared InvestmentCalculator (lifted to the page) so the calculator, the
+// forecast, and the Invest flow all use the same number. [F §11]
+// Layout: Summary cards → payback note → assumptions → two charts side by side.
 
-import { useState, useMemo } from 'react'
-import { ForecastControls } from './ForecastControls'
+import { useMemo } from 'react'
+import { Clock } from 'lucide-react'
 import { ForecastSummaryCards } from './ForecastSummaryCards'
 import { CumulativeRoiChart } from './CumulativeRoiChart'
 import { YearlyIncomeChart } from './YearlyIncomeChart'
-import { ScenarioComparisonChart } from './ScenarioComparisonChart'
 import { AssumptionsPanel } from './AssumptionsPanel'
 import { Card } from '@/components/ui/Card'
+import { formatNumber, onlyDigits } from '@/lib/utils/numbers'
 import type { Project, ForecastHorizon, ForecastScenario, ForecastYearData, RoiForecastResult, ForecastAssumptions } from '@/types/domain'
 
 // ─── ROI calculation (client-side only, no backend) ─────────────────────────
@@ -28,6 +30,13 @@ const DEFAULT_ASSUMPTIONS: ForecastAssumptions = {
   electricityTariff: 1_500,
   operatingFeePercent: 2,
 }
+
+// Fixed 25-year horizon and base scenario per product direction.
+const HORIZON = 25 as ForecastHorizon
+const SCENARIO: ForecastScenario = 'base'
+
+// Toggle the war/market context line in the payback note. Set false to hide it.
+const SHOW_MARKET_NOTE = true
 
 function computeForecast(
   project: Project,
@@ -74,26 +83,17 @@ function computeForecast(
 
 interface RoiForecastSectionProps {
   project: Project
+  /** Raw digit string of the invested amount (shared with the calculator) */
+  amount: string
 }
 
-export function RoiForecastSection({ project }: RoiForecastSectionProps) {
-  const [horizon, setHorizon] = useState<ForecastHorizon>(10)
-  const [scenario, setScenario] = useState<ForecastScenario>('base')
-  const [amount, setAmount] = useState('')
+export function RoiForecastSection({ project, amount }: RoiForecastSectionProps) {
+  const investedAmount = parseFloat(onlyDigits(amount)) || 0
 
-  const investedAmount = parseFloat(amount.replace(/[^0-9.]/g, '')) || 0
-
-  // Compute all three scenarios for the comparison chart
   const { result, yearlyData } = useMemo(
-    () => computeForecast(project, horizon, scenario, investedAmount),
-    [project, horizon, scenario, investedAmount]
+    () => computeForecast(project, HORIZON, SCENARIO, investedAmount),
+    [project, investedAmount],
   )
-
-  const allScenarios = useMemo(() => ({
-    conservative: computeForecast(project, horizon, 'conservative', investedAmount).yearlyData,
-    base:         computeForecast(project, horizon, 'base',         investedAmount).yearlyData,
-    optimistic:   computeForecast(project, horizon, 'optimistic',   investedAmount).yearlyData,
-  }), [project, horizon, investedAmount])
 
   return (
     <div className="flex flex-col gap-5">
@@ -101,43 +101,45 @@ export function RoiForecastSection({ project }: RoiForecastSectionProps) {
       <div>
         <h2 className="text-[17px] font-semibold text-text">پیش‌بینی اقتصادی و ROI</h2>
         <p className="text-[13px] text-text-muted mt-1">
-          بازده تخمینی بر اساس افق زمانی و سناریو انتخابی شما
+          بازده تخمینی در افق ۲۵ ساله بر اساس مبلغ واردشده در ماشین‌حساب
         </p>
       </div>
 
-      {/* Controls */}
-      <Card className="p-4">
-        <ForecastControls
-          horizon={horizon}
-          scenario={scenario}
-          amount={amount}
-          onHorizonChange={setHorizon}
-          onScenarioChange={setScenario}
-          onAmountChange={setAmount}
-        />
-      </Card>
-
-      {/* 4 summary cards — live */}
+      {/* 3 summary cards — live (payback shown as a note below, not a card) */}
       <ForecastSummaryCards result={result} />
 
-      {/* 3 charts — stacked full-width on phone [M §6.7] */}
-      <Card className="p-4">
-        <h3 className="text-[14px] font-semibold text-text mb-4">بازده تجمیعی در طول زمان</h3>
-        <CumulativeRoiChart yearlyData={yearlyData} investedAmount={investedAmount || project.minInvestment} />
-      </Card>
+      {/* Payback period — shown as a contextual note instead of a hard number card */}
+      <div className="flex items-start gap-3 rounded-md bg-blue-tint border border-blue-base/20 px-4 py-3">
+        <Clock size={18} className="text-blue-deep shrink-0 mt-0.5" />
+        <p className="text-[13px] text-text-2 leading-relaxed">
+          دوره بازگشت سرمایه در شرایط فعلی بازار
+          {SHOW_MARKET_NOTE && ' (با توجه به وضعیت جنگ)'} حدود{' '}
+          <strong className="tabular-nums">{formatNumber(result.paybackYears, 1)} سال</strong>{' '}
+          برآورد می‌شود؛ سال گذشته این عدد حدود{' '}
+          <strong className="tabular-nums">{formatNumber(4)} سال</strong> بود.
+          این یک تخمین است و تضمینی برای آینده نیست.
+        </p>
+      </div>
 
-      <Card className="p-4">
-        <h3 className="text-[14px] font-semibold text-text mb-4">درآمد سالانه پیش‌بینی‌شده</h3>
-        <YearlyIncomeChart yearlyData={yearlyData} />
-      </Card>
-
-      <Card className="p-4">
-        <h3 className="text-[14px] font-semibold text-text mb-4">مقایسه سناریوها</h3>
-        <ScenarioComparisonChart scenarios={allScenarios} />
-      </Card>
-
-      {/* Assumptions — disclaimer always visible, detail expandable [F §11] */}
+      {/* Assumptions & methodology — moved up, above the charts [F §11] */}
       <AssumptionsPanel assumptions={DEFAULT_ASSUMPTIONS} />
+
+      {/* Two charts side by side (smaller) — stack on phone [M §6.7] */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-5 items-start">
+        <Card className="p-4">
+          <h3 className="text-[14px] font-semibold text-text mb-4">بازده تجمیعی در طول زمان</h3>
+          <CumulativeRoiChart
+            yearlyData={yearlyData}
+            investedAmount={investedAmount || project.minInvestment}
+            height={220}
+          />
+        </Card>
+
+        <Card className="p-4">
+          <h3 className="text-[14px] font-semibold text-text mb-4">درآمد سالانه پیش‌بینی‌شده</h3>
+          <YearlyIncomeChart yearlyData={yearlyData} height={220} />
+        </Card>
+      </div>
     </div>
   )
 }

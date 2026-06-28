@@ -20,6 +20,7 @@ import {
   Coins,
 } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
+import { NavPendingReporter } from './NavProgress'
 import { SearchField } from '@/components/ui/SearchField'
 import { useNotifications, useUnreadCount } from '@/lib/hooks/useNotifications'
 import { useMe } from '@/lib/hooks/useAuth'
@@ -81,6 +82,7 @@ export function SidebarNav({ pathname, onNavigate }: SidebarNavProps) {
           >
             <Icon size={22} strokeWidth={1.5} className="shrink-0" />
             <span>{label}</span>
+            <NavPendingReporter />
           </Link>
         )
       })}
@@ -326,7 +328,9 @@ function SidebarBottom() {
           className={cn(
             'flex items-center gap-3 w-full px-3 py-3 rounded-[28px] text-[13px] font-medium',
             'transition-colors duration-[120ms] ease-out min-h-[44px]',
-            notifOpen ? 'bg-hover text-text' : 'text-text-muted hover:bg-hover hover:text-text',
+            notifOpen
+              ? 'bg-blue-tint text-text'
+              : 'bg-[var(--sidebar-hover)] text-text-2 hover:bg-blue-tint hover:text-text',
           )}
         >
           <span className="relative shrink-0">
@@ -362,7 +366,9 @@ function SidebarBottom() {
           className={cn(
             'flex items-center gap-3 w-full px-3 py-3 rounded-[28px] text-[13px] font-medium',
             'transition-colors duration-[120ms] ease-out min-h-[44px]',
-            profileOpen ? 'bg-hover text-text' : 'text-text-muted hover:bg-hover hover:text-text',
+            profileOpen
+              ? 'bg-blue-tint text-text'
+              : 'bg-[var(--sidebar-hover)] text-text-2 hover:bg-blue-tint hover:text-text',
           )}
         >
           <span className="w-7 h-7 rounded-pill bg-green-tint text-green-deep text-xs font-bold flex items-center justify-center shrink-0">

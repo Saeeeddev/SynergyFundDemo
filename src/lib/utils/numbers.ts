@@ -12,6 +12,24 @@ export function toPersianDigits(value: string | number): string {
   return String(value).replace(/\d/g, (d) => PERSIAN_DIGITS[Number(d)]);
 }
 
+// Strip everything except digits, normalizing Persian → Latin. For reading the
+// raw numeric value back out of a grouped amount input.
+export function onlyDigits(value: string): string {
+  return String(value)
+    .replace(/[۰-۹]/g, (d) => String(PERSIAN_DIGITS.indexOf(d)))
+    .replace(/[^0-9]/g, "");
+}
+
+// Group a typed amount with the Persian thousands separator so big numbers stay
+// readable while the user types, e.g. "12000000" → "۱۲٬۰۰۰٬۰۰۰".
+// Used by the amount/quantity inputs in invest / sell / project calculator.
+export function groupDigits(value: string): string {
+  const digits = onlyDigits(value);
+  if (!digits) return "";
+  const grouped = digits.replace(/\B(?=(\d{3})+(?!\d))/g, PERSIAN_THOUSANDS_SEP);
+  return toPersianDigits(grouped);
+}
+
 // Format a number with Persian thousands separator.
 // e.g. 1200000 → "۱٬۲۰۰٬۰۰۰"
 export function formatNumber(value: number, decimals = 0): string {
@@ -40,14 +58,17 @@ export function formatWatts(watts: number): string {
   return `${bidiIsolate(formatNumber(watts))} وات`;
 }
 
-// Compact number (K/M) — for chart axis labels where space is tight.
-// Still returns Persian digits.
+// Compact number — for chart axis labels where space is tight.
+// Distinct scale words so billion/million are never confused. Persian digits.
 export function formatCompact(value: number): string {
+  if (Math.abs(value) >= 1_000_000_000) {
+    return toPersianDigits((value / 1_000_000_000).toFixed(1)) + " میلیارد";
+  }
   if (Math.abs(value) >= 1_000_000) {
-    return toPersianDigits((value / 1_000_000).toFixed(1)) + " م";
+    return toPersianDigits((value / 1_000_000).toFixed(1)) + " میلیون";
   }
   if (Math.abs(value) >= 1_000) {
-    return toPersianDigits((value / 1_000).toFixed(0)) + " ه";
+    return toPersianDigits((value / 1_000).toFixed(0)) + " هزار";
   }
   return toPersianDigits(String(value));
 }

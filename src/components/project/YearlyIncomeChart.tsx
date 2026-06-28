@@ -12,9 +12,10 @@ import type { ForecastYearData } from '@/types/domain'
 
 interface YearlyIncomeChartProps {
   yearlyData: ForecastYearData[]
+  height?: number
 }
 
-export function YearlyIncomeChart({ yearlyData }: YearlyIncomeChartProps) {
+export function YearlyIncomeChart({ yearlyData, height = 280 }: YearlyIncomeChartProps) {
   const [HighchartsReact, setHighchartsReact] = useState<React.ComponentType<Record<string, unknown>> | null>(null)
   const [Highcharts, setHighcharts] = useState<unknown>(null)
   const [reducedMotion, setReducedMotion] = useState(false)
@@ -44,7 +45,7 @@ export function YearlyIncomeChart({ yearlyData }: YearlyIncomeChartProps) {
       type: 'column',
       backgroundColor: 'transparent',
       animation: !reducedMotion,
-      height: 280,
+      height,
       style: { fontFamily: CHART_FONT },
     },
     title: { text: '' },
@@ -103,10 +104,14 @@ export function YearlyIncomeChart({ yearlyData }: YearlyIncomeChartProps) {
         chartOptions: { chart: { height: 220 } },
       }],
     },
-  }), [yearlyData, reducedMotion])
+  }), [yearlyData, reducedMotion, height])
 
   if (!HighchartsReact || !Highcharts) {
-    return <Skeleton className="h-[280px] w-full rounded-card" />
+    return (
+      <div style={{ height }}>
+        <Skeleton className="h-full w-full rounded-card" />
+      </div>
+    )
   }
 
   return (

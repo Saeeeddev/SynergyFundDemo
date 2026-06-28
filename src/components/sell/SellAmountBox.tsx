@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { formatToman } from '@/lib/utils/currency'
-import { formatNumber, bidiIsolate } from '@/lib/utils/numbers'
+import { formatNumber, bidiIsolate, groupDigits, onlyDigits } from '@/lib/utils/numbers'
 import type { Holding } from '@/types/domain'
 
 // [F §12, D §11, M §6.9] Quantity input + 4 sell presets + red summary well
@@ -56,8 +56,8 @@ export function SellAmountBox({
       {/* Quantity input — numeric, whole shares (watts) */}
       <Input
         label="تعداد سهام (وات)"
-        value={quantity}
-        onChange={e => onQuantityChange(e.target.value.replace(/[^0-9]/g, ''))}
+        value={groupDigits(quantity)}
+        onChange={e => onQuantityChange(onlyDigits(e.target.value))}
         inputMode="numeric"
         placeholder="تعداد سهام برای فروش"
         error={qtyError}

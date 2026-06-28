@@ -34,17 +34,17 @@ export default function SettingsPage() {
       {/* Underline tabs — scrollable strip on phone [M §6.10, D §9.7] */}
       <Tabs tabs={TABS} value={tab} onChange={setTab} accent="green" />
 
-      {/* Tab 1 — Account & Identity [F §7 Tab1] */}
+      {/* Tab 1 — Account & Identity [F §7 Tab1] — two cards side by side on desktop */}
       {tab === 'account' && (
-        <div className="flex flex-col gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
           <VerificationStatusCard />
           <PayoutMethodsCard />
         </div>
       )}
 
-      {/* Tab 2 — Security & Access [F §7 Tab2] */}
+      {/* Tab 2 — Security & Access [F §7 Tab2] — two cards side by side on desktop */}
       {tab === 'security' && (
-        <div className="flex flex-col gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
           <PasswordCard />
           <TwoFactorCard />
         </div>

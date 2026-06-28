@@ -20,6 +20,7 @@ import { SellCompleteStep } from '@/components/sell/SellCompleteStep'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { Card } from '@/components/ui/Card'
+import { BackButton } from '@/components/ui/BackButton'
 
 const SELL_FEE_RATE = 0.015  // 1.5% on all sell transactions
 
@@ -116,6 +117,8 @@ export default function SellPage({ params }: SellPageProps) {
 
   return (
     <div className="p-3 lg:p-3 flex flex-col gap-4 lg:gap-5">
+
+      <BackButton href="/portfolio" label="بازگشت به سبد دارایی" />
 
       {/* Stepper (sell variant = red) */}
       <Card className="p-4">

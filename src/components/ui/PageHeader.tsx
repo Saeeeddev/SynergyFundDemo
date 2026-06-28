@@ -24,7 +24,7 @@ export function PageHeader({ title, subtitle, actions, icon, className }: PageHe
     >
       <div className="flex items-center gap-3 min-w-0">
         {icon && (
-          <span className="flex items-center justify-center w-11 h-11 rounded-chip bg-blue-tint text-blue-base shrink-0">
+          <span className="flex items-center justify-center w-11 h-11 rounded-chip bg-[var(--sidebar-hover)] text-[var(--sidebar-active)] shrink-0">
             {icon}
           </span>
         )}

@@ -12,9 +12,10 @@ import type { ForecastYearData } from '@/types/domain'
 interface CumulativeRoiChartProps {
   yearlyData: ForecastYearData[]
   investedAmount: number
+  height?: number
 }
 
-export function CumulativeRoiChart({ yearlyData, investedAmount }: CumulativeRoiChartProps) {
+export function CumulativeRoiChart({ yearlyData, investedAmount, height = 280 }: CumulativeRoiChartProps) {
   const [HighchartsReact, setHighchartsReact] = useState<React.ComponentType<Record<string, unknown>> | null>(null)
   const [Highcharts, setHighcharts] = useState<unknown>(null)
   const [reducedMotion, setReducedMotion] = useState(false)
@@ -74,7 +75,7 @@ export function CumulativeRoiChart({ yearlyData, investedAmount }: CumulativeRoi
         type: 'area',
         backgroundColor: 'transparent',
         animation: !reducedMotion,
-        height: 280,
+        height,
         style: { fontFamily: CHART_FONT },
       },
       title: { text: '' },
@@ -153,10 +154,14 @@ export function CumulativeRoiChart({ yearlyData, investedAmount }: CumulativeRoi
         }],
       },
     }
-  }, [yearlyData, investedAmount, breakEvenYear, reducedMotion])
+  }, [yearlyData, investedAmount, breakEvenYear, reducedMotion, height])
 
   if (!HighchartsReact || !Highcharts) {
-    return <Skeleton className="h-[280px] w-full rounded-card" />
+    return (
+      <div style={{ height }}>
+        <Skeleton className="h-full w-full rounded-card" />
+      </div>
+    )
   }
 
   return (

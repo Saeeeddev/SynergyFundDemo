@@ -5,7 +5,8 @@
 // [M §6.8] Most important mobile flow: compact stepper, stacked boxes, sticky CTA, bottom nav hidden
 
 import { use, useEffect, useState, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { onlyDigits } from '@/lib/utils/numbers'
 import { useProject } from '@/lib/hooks/useProjects'
 import { useDashboard } from '@/lib/hooks/usePortfolio'
 import { useBuyWatts } from '@/lib/hooks/useInvestments'
@@ -20,6 +21,7 @@ import { CompleteStep } from '@/components/invest/CompleteStep'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { Card } from '@/components/ui/Card'
+import { BackButton } from '@/components/ui/BackButton'
 
 const PLATFORM_FEE = 0.005  // 0.5%
 const BANK_FEE     = 0.015  // 1.5%
@@ -33,6 +35,7 @@ interface InvestPageProps {
 export default function InvestPage({ params }: InvestPageProps) {
   const { projectId } = use(params)
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   // ── Data ─────────────────────────────────────────────────────────────────────
   const { data: project, isLoading, isError } = useProject(projectId)
@@ -41,7 +44,8 @@ export default function InvestPage({ params }: InvestPageProps) {
 
   // ── Form state ────────────────────────────────────────────────────────────────
   const [step, setStep]               = useState<Step>(1)
-  const [amount, setAmount]           = useState('')
+  // Prefill with the amount carried over from the project calculator (if any).
+  const [amount, setAmount]           = useState(() => onlyDigits(searchParams.get('amount') ?? ''))
   const [fundingSource, setFunding]   = useState<FundingSource>('platform')
   const [rules1, setRules1]           = useState(false)
   const [rules2, setRules2]           = useState(false)
@@ -119,6 +123,8 @@ export default function InvestPage({ params }: InvestPageProps) {
 
   return (
     <div className="p-3 lg:p-3 flex flex-col gap-4 lg:gap-5">
+
+      <BackButton href="/marketplace" label="بازگشت به فرصت‌های سرمایه‌گذاری" />
 
       {/* Stepper — always visible */}
       <Card className="p-4">
