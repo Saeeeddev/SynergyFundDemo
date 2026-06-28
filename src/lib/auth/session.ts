@@ -1,25 +1,30 @@
-// Session management via HTTP-only cookie (ARCHITECTURE.md §3.3)
-// Server-safe: getSession() reads the cookie from the request in server context;
-// setSession/clearSession are used in Route Handlers or server actions.
+// Session management via signed HTTP-only cookie (ARCHITECTURE.md §3.3).
+// The cookie carries an HMAC-signed token (see ./token.ts), so it can't be
+// forged. getSession() reads + verifies the cookie in server context;
+// setSession/clearSession run in Route Handlers or server actions.
 
 import { cookies } from "next/headers";
+import { signToken, verifyToken } from "./token";
 
 const COOKIE_NAME = "synergy_auth";
+const MAX_AGE = 60 * 60 * 24; // 1 day — users must re-login at least daily
 
-export async function getSession(): Promise<{ token: string } | null> {
+export async function getSession(): Promise<{ username: string } | null> {
   const jar = await cookies();
-  const token = jar.get(COOKIE_NAME)?.value;
-  if (!token) return null;
-  return { token };
+  const payload = await verifyToken(jar.get(COOKIE_NAME)?.value);
+  if (!payload) return null;
+  return { username: payload.sub };
 }
 
-export async function setSession(token: string): Promise<void> {
+export async function setSession(username: string): Promise<void> {
+  const token = await signToken({ sub: username, iat: Date.now() });
   const jar = await cookies();
   jar.set(COOKIE_NAME, token, {
     httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
-    maxAge: 60 * 60 * 24 * 7, // 7 days
+    maxAge: MAX_AGE,
   });
 }
 

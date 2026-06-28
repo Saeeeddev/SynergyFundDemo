@@ -20,12 +20,12 @@ export async function loginAction(
   username: string,
   password: string,
 ): Promise<LoginResponse> {
-  const result = validateCredentials(username.trim(), password)
+  const trimmedUsername = username.trim()
 
-  if (!result.ok) {
+  if (!validateCredentials(trimmedUsername, password)) {
     return { ok: false, error: 'نام کاربری یا رمز عبور اشتباه است' }
   }
 
-  await setSession(result.token)
+  await setSession(trimmedUsername)
   return { ok: true }
 }

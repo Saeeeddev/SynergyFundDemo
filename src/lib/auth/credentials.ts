@@ -1,16 +1,10 @@
 // Dev-phase: hardcoded admin account (ARCHITECTURE.md §3.3, FEATURES.md §0.1).
-// Replace with a real auth API call when the backend is ready.
-
-export interface CredentialResult {
-  ok: true;
-  token: string;
-}
-
-export interface CredentialFailure {
-  ok: false;
-}
-
-export type CredentialsResponse = CredentialResult | CredentialFailure;
+// TEMPORARY — replace with a real auth API call when the Django backend is ready.
+// See docs/SiteSyerngy_versions/v1/AUTH.md.
+//
+// NOTE: these credentials live in source on purpose for the demo phase. The
+// session's actual security comes from SESSION_SECRET (see ./token.ts), not from
+// hiding the password here.
 
 const ADMIN_USERNAME = "Saeed";
 const ADMIN_PASSWORD = "S@eed123";
@@ -18,9 +12,6 @@ const ADMIN_PASSWORD = "S@eed123";
 export function validateCredentials(
   username: string,
   password: string
-): CredentialsResponse {
-  if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-    return { ok: true, token: "dev-token-admin-synergy" };
-  }
-  return { ok: false };
+): boolean {
+  return username === ADMIN_USERNAME && password === ADMIN_PASSWORD;
 }

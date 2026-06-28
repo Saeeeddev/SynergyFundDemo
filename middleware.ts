@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { verifyToken } from "@/lib/auth/token";
 
 // Route-level auth guard [ARCHITECTURE.md §3.4, FEATURES.md §0.2]
 // Runs on the Edge before any page renders — no DB access here.
-// Cookie: synergy_auth (HTTP-only, set by lib/auth/session.ts)
+// Cookie: synergy_auth (HTTP-only, HMAC-signed by lib/auth/session.ts).
+// The cookie's signature is verified here, so it cannot be forged.
 
 const COOKIE_NAME = "synergy_auth";
 
@@ -14,7 +16,7 @@ function isPublic(pathname: string): boolean {
   return PUBLIC_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 }
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Always allow static assets, fonts, api routes
@@ -22,7 +24,9 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const hasSession = Boolean(request.cookies.get(COOKIE_NAME)?.value);
+  // Trust the cookie only if its HMAC signature verifies against SESSION_SECRET.
+  const session = await verifyToken(request.cookies.get(COOKIE_NAME)?.value);
+  const hasSession = session !== null;
 
   // Authenticated user visiting /login → redirect to /dashboard [F §0.2]
   if (pathname === "/login" && hasSession) {
