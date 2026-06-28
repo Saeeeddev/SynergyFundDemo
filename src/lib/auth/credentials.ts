@@ -13,7 +13,7 @@ export interface CredentialFailure {
 export type CredentialsResponse = CredentialResult | CredentialFailure;
 
 const ADMIN_USERNAME = "Saeed";
-const ADMIN_PASSWORD = "12345";
+const ADMIN_PASSWORD = "S@eed123";
 
 export function validateCredentials(
   username: string,
