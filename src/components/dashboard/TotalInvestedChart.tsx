@@ -36,7 +36,7 @@ export function TotalInvestedChart({ series, isLoading, isError, onRetry }: Tota
           <ErrorState scope="inline" onRetry={onRetry} />
         </div>
       ) : (
-        <MonthlyBarChart data={data} height={240} valueFormatter={formatTomanCompact} />
+        <MonthlyBarChart data={data} height={240} valueFormatter={formatTomanCompact} rotateLabels />
       )}
     </Card>
   )

@@ -7,6 +7,7 @@ import type { Activity, Investment } from "@/lib/schemas/investment";
 import type { Payout, PayoutMethod, IncomeSummary } from "@/lib/schemas/payout";
 import type { Report } from "@/lib/schemas/report";
 import type { User, Notification } from "@/lib/schemas/user";
+import type { CashConfig } from "@/lib/schemas/cash";
 import type { DashboardSummary } from "@/types/domain";
 
 // ─── Projects (10 items → 2 pages of 8 / 5) ───────────────────────────────────
@@ -378,7 +379,148 @@ export const MOCK_INVESTMENTS: Investment[] = [
     status: "completed",
     date: "2024-11-05T08:30:00Z",
   },
+  {
+    id: "inv-6",
+    type: "buy",
+    projectId: "proj-1",
+    projectName: "نیروگاه خورشیدی اصفهان ۱",
+    sharesCount: 3_200,
+    pricePerShare: 10_000,
+    totalAmount: 32_480_000,
+    fee: 480_000,
+    status: "completed",
+    date: "2024-10-12T09:10:00Z",
+  },
+  {
+    id: "inv-7",
+    type: "sell",
+    projectId: "proj-5",
+    projectName: "طلوع خورشید یزد",
+    sharesCount: 1_500,
+    pricePerShare: 11_500,
+    totalAmount: 16_990_500,
+    fee: 259_500,
+    status: "completed",
+    date: "2024-09-28T14:40:00Z",
+  },
+  {
+    id: "inv-8",
+    type: "buy",
+    projectId: "proj-6",
+    projectName: "نور مهر بوشهر",
+    sharesCount: 4_800,
+    pricePerShare: 9_500,
+    totalAmount: 46_284_000,
+    fee: 684_000,
+    status: "completed",
+    date: "2024-09-03T10:05:00Z",
+  },
+  {
+    id: "inv-9",
+    type: "buy",
+    projectId: "proj-10",
+    projectName: "مهتاب انرژی سمنان",
+    sharesCount: 2_600,
+    pricePerShare: 13_000,
+    totalAmount: 34_307_000,
+    fee: 507_000,
+    status: "completed",
+    date: "2024-08-18T11:30:00Z",
+  },
+  {
+    id: "inv-10",
+    type: "buy",
+    projectId: "proj-8",
+    projectName: "آفتاب زاگرس لرستان",
+    sharesCount: 2_100,
+    pricePerShare: 10_500,
+    totalAmount: 22_375_500,
+    fee: 330_500,
+    status: "completed",
+    date: "2024-07-22T08:50:00Z",
+  },
+  {
+    id: "inv-11",
+    type: "sell",
+    projectId: "proj-1",
+    projectName: "نیروگاه خورشیدی اصفهان ۱",
+    sharesCount: 1_200,
+    pricePerShare: 10_200,
+    totalAmount: 12_058_800,
+    fee: 181_200,
+    status: "completed",
+    date: "2024-06-30T15:15:00Z",
+  },
+  {
+    id: "inv-12",
+    type: "buy",
+    projectId: "proj-5",
+    projectName: "طلوع خورشید یزد",
+    sharesCount: 5_000,
+    pricePerShare: 11_000,
+    totalAmount: 55_825_000,
+    fee: 825_000,
+    status: "completed",
+    date: "2024-06-08T09:40:00Z",
+  },
+  {
+    id: "inv-13",
+    type: "buy",
+    projectId: "proj-6",
+    projectName: "نور مهر بوشهر",
+    sharesCount: 3_400,
+    pricePerShare: 9_500,
+    totalAmount: 32_785_000,
+    fee: 485_000,
+    status: "completed",
+    date: "2024-05-19T12:20:00Z",
+  },
+  {
+    id: "inv-14",
+    type: "buy",
+    projectId: "proj-10",
+    projectName: "مهتاب انرژی سمنان",
+    sharesCount: 1_800,
+    pricePerShare: 13_000,
+    totalAmount: 23_751_000,
+    fee: 351_000,
+    status: "completed",
+    date: "2024-04-26T10:00:00Z",
+  },
+  {
+    id: "inv-15",
+    type: "sell",
+    projectId: "proj-8",
+    projectName: "آفتاب زاگرس لرستان",
+    sharesCount: 900,
+    pricePerShare: 10_800,
+    totalAmount: 9_576_000,
+    fee: 144_000,
+    status: "completed",
+    date: "2024-04-02T13:05:00Z",
+  },
 ];
+
+// ─── Cash flows config (deposit / withdraw / payment methods) ─────────────────
+
+export const MOCK_CASH_CONFIG: CashConfig = {
+  userAccounts: [
+    { id: "acc-mellat",   bankName: "بانک ملت",     cardNumber: "۶۱۰۴-۳۳۷۲-۱۲۳۴-۵۶۷۸", brandColor: "text-red-base" },
+    { id: "acc-saman",    bankName: "بانک سامان",   cardNumber: "۶۲۱۹-۸۶۱۹-۴۴۵۵-۶۶۷۷", brandColor: "text-blue-base" },
+    { id: "acc-pasargad", bankName: "بانک پاسارگاد", cardNumber: "۵۰۲۲-۲۹۴۰-۱۱۲۲-۳۳۴۴", brandColor: "text-amber-deep" },
+  ],
+  platformAccounts: [
+    { id: "pf-mellat",  bankName: "حساب پلتفرم — بانک ملت",   cardNumber: "۶۱۰۴-۱۲۰۰-۸۸۴۵-۰۰۱۱", brandColor: "text-red-base" },
+    { id: "pf-saman",   bankName: "حساب پلتفرم — بانک سامان", cardNumber: "۶۲۱۹-۸۰۱۰-۵۵۳۱-۲۲۳۳", brandColor: "text-blue-base" },
+  ],
+  gateways: [
+    { id: "gw-saman",  label: "درگاه بانک سامان (سامان کیش)" },
+    { id: "gw-mellat", label: "درگاه بانک ملت (به‌پرداخت)" },
+    { id: "gw-melli",  label: "درگاه بانک ملی (سداد)" },
+  ],
+  recentWithdrawAmounts: [39_000_000, 21_000_000, 13_000_000],
+  dailyWithdrawCap: 332_739_000,
+};
 
 // ─── Payouts (12 items → 2 pages of 8 / 5) ────────────────────────────────────
 

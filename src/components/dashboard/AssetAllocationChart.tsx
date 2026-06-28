@@ -38,7 +38,7 @@ export function AssetAllocationChart({ data, isLoading, isError, onRetry }: Asse
           <DonutChart
             data={donutData}
             showLegend={false}
-            height={220}
+            height={260}
             isLoading={isLoading}
             isError={isError}
             onRetry={onRetry}

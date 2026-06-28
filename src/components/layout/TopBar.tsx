@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { usePathname } from 'next/navigation'
-import { Menu, Search, X } from 'lucide-react'
+import Image from 'next/image'
+import { Search, X } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { SearchField } from '@/components/ui/SearchField'
 import { useNotifications, useUnreadCount } from '@/lib/hooks/useNotifications'
@@ -32,11 +33,7 @@ function usePageTitle(): string {
   return PAGE_TITLES[segment] ?? 'پنل مدیریت'
 }
 
-interface TopBarProps {
-  onOpenDrawer: () => void
-}
-
-export function TopBar({ onOpenDrawer }: TopBarProps) {
+export function TopBar() {
   const [notifOpen, setNotifOpen]     = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
   const [searchOpen, setSearchOpen]   = useState(false)
@@ -51,16 +48,19 @@ export function TopBar({ onOpenDrawer }: TopBarProps) {
   return (
     <>
       {/* ── Mobile compact header (<lg) ─────────────────────────────────────────── */}
-      <header className="mobile-header lg:hidden flex items-center h-14 px-3 gap-2 shrink-0 sticky top-0 z-30">
-        <button
-          onClick={onOpenDrawer}
-          aria-label="منوی ناوبری"
-          className="flex items-center justify-center w-10 h-10 rounded-md text-text-muted hover:bg-hover min-h-[44px] transition-colors duration-[120ms]"
-        >
-          <Menu size={22} strokeWidth={1.5} />
-        </button>
+      <header className="mobile-header lg:hidden flex flex-col shrink-0 sticky top-0 z-30">
+        {/* Row 1 — brand + actions (nav lives in the bottom «بیشتر») */}
+        <div className="flex items-center h-14 px-3 gap-2">
+        <Image
+          src="/Images/synergyfundlogotransparent.png"
+          alt="سینرژی"
+          width={737}
+          height={258}
+          className="h-8 w-auto object-contain shrink-0"
+          priority
+        />
 
-        <span className="flex-1 text-[15px] font-semibold text-text truncate">{pageTitle}</span>
+        <span className="flex-1" />
 
         <button
           onClick={() => setSearchOpen(true)}
@@ -95,6 +95,12 @@ export function TopBar({ onOpenDrawer }: TopBarProps) {
             {initials}
           </span>
         </button>
+        </div>
+
+        {/* Row 2 — current page name, connected sub-row */}
+        <div className="flex items-center h-10 px-4 border-t border-border">
+          <span className="text-[14px] font-semibold text-text truncate">{pageTitle}</span>
+        </div>
       </header>
 
       {/* ── Search overlay (mobile) ──────────────────────────────────────────────── */}

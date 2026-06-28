@@ -8,9 +8,9 @@ import { Settings } from 'lucide-react'
 import { Tabs } from '@/components/ui/Tabs'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { VerificationStatusCard } from '@/components/settings/VerificationStatusCard'
-import { PayoutMethodsCard } from '@/components/settings/PayoutMethodsCard'
 import { PasswordCard } from '@/components/settings/PasswordCard'
 import { TwoFactorCard } from '@/components/settings/TwoFactorCard'
+import { PaymentMethodsCard } from '@/components/dashboard/PaymentMethodsCard'
 
 const TABS = [
   { value: 'account', label: 'حساب و هویت' },
@@ -38,7 +38,8 @@ export default function SettingsPage() {
       {tab === 'account' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
           <VerificationStatusCard />
-          <PayoutMethodsCard />
+          {/* Same payment-methods card as the dashboard (single shared component) */}
+          <PaymentMethodsCard />
         </div>
       )}
 

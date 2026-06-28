@@ -21,6 +21,7 @@ import {
   MOCK_REPORTS,
   MOCK_USER,
   MOCK_NOTIFICATIONS,
+  MOCK_CASH_CONFIG,
 } from "./fixtures";
 
 // ─── Error toggle ─────────────────────────────────────────────────────────────
@@ -139,6 +140,12 @@ export const mockNotifications = {
       _notifications = _notifications.map((n) => ({ ...n, read: true }))
       return true
     }),
+};
+
+// ─── Cash (deposit / withdraw / payment methods config) ───────────────────────
+
+export const mockCash = {
+  config: () => call(() => MOCK_CASH_CONFIG),
 };
 
 // ─── Investments (buy / sell mutations) ───────────────────────────────────────

@@ -26,7 +26,7 @@ export default function ShellClient({ children }: ShellClientProps) {
 
         {/* Content column: TopBar + scrollable page content */}
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-          <TopBar onOpenDrawer={() => setDrawerOpen(true)} />
+          <TopBar />
 
           {/*
             White content box — edge-to-edge on phone, 8px margin + 24px radius on md+.

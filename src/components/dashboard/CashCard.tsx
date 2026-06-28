@@ -17,8 +17,8 @@ interface CashCardProps {
 export function CashCard({ balance, onDeposit, onWithdraw }: CashCardProps) {
   return (
     <div className="relative overflow-hidden rounded-card border border-border shadow-[var(--shadow-card)] p-5 lg:p-6">
-      {/* asas slate-blue gradient (primary-blue → light-blue → lavender) */}
-      <div className="absolute inset-0 bg-gradient-to-bl from-[var(--blue-deep)] via-[var(--blue-base)] to-[var(--purple-soft)] opacity-95" />
+      {/* Brighter gradient: vivid blue → cyan → lavender */}
+      <div className="absolute inset-0 bg-gradient-to-bl from-[var(--blue-base)] via-[var(--cyan-base)] to-[var(--purple-base)]" />
       
       {/* Content overlay */}
       <div className="relative z-10 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">

@@ -85,19 +85,20 @@ export function MonthlyBarChart({
         <div className="w-14 shrink-0" />
         <div
           className={cn(
-            'flex flex-1 gap-1.5 px-1',
-            rotateLabels ? 'h-12 items-start pt-2' : 'justify-between pt-2',
+            'flex flex-1 gap-1.5 px-1 justify-between',
+            // Rotated layout only on phones; desktop has room → stay horizontal
+            rotateLabels ? 'pt-2 h-12 items-start lg:h-auto lg:items-stretch' : 'pt-2',
           )}
         >
           {data.map((d, i) => (
             <span
               key={i}
               className={cn(
-                'text-[10px] font-medium text-text-muted tabular-nums',
+                'text-[10px] font-medium text-text-muted tabular-nums flex-1 text-center',
                 rotateLabels
-                  // ~45° tilt so each full date sits under its own bar
-                  ? 'flex-1 origin-top -rotate-45 whitespace-nowrap text-center'
-                  : 'flex-1 truncate text-center',
+                  // ~45° tilt on phone so each date is readable; horizontal on lg+
+                  ? 'origin-top -rotate-45 whitespace-nowrap lg:rotate-0 lg:whitespace-normal lg:truncate'
+                  : 'truncate',
               )}
             >
               {d.label}

@@ -6,7 +6,8 @@
 
 import { TrendingUp, DollarSign, Zap, BarChart2, LayoutDashboard } from 'lucide-react'
 import { PageHeader } from '@/components/ui/PageHeader'
-import { CashCard } from '@/components/dashboard/CashCard'
+import { CashSection } from '@/components/dashboard/CashSection'
+import { PaymentMethodsCard } from '@/components/dashboard/PaymentMethodsCard'
 import { TotalInvestedChart } from '@/components/dashboard/TotalInvestedChart'
 import { AssetAllocationChart } from '@/components/dashboard/AssetAllocationChart'
 import { RecentActivitiesTable } from '@/components/dashboard/RecentActivitiesTable'
@@ -30,10 +31,19 @@ export default function DashboardPage() {
         subtitle="نمای کلی سرمایه‌گذاری‌ها، دارایی‌ها و درآمد شما"
       />
 
-      {/* Row 1 — Cash card [F §2 R1] */}
-      <CashCard
-        balance={summary?.cashBalance ?? 0}
-      />
+      {/* Row 1 — Cash + payment methods (start) beside ترکیب دارایی (end) */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-4 lg:items-start">
+        <div className="flex flex-col gap-4">
+          <CashSection balance={summary?.cashBalance ?? 0} />
+          <PaymentMethodsCard />
+        </div>
+        <AssetAllocationChart
+          data={summary?.allocation ?? []}
+          isLoading={summaryLoading}
+          isError={summaryError}
+          onRetry={() => refetchSummary()}
+        />
+      </div>
 
       {/* Row 2 — Four KPI StatCards [F §2 R2] — 2×2 on phone, 4-up on desktop [M §6.2] */}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
@@ -58,38 +68,21 @@ export default function DashboardPage() {
         />
         <StatCard
           label="انرژی تولیدشده"
-          value={summaryLoading ? '…' : `${bidiIsolate(formatNumber(summary?.energyProducedKwh ?? 0))} کیلوواتساعت`}
+          value={summaryLoading ? '…' : `${bidiIsolate(formatNumber(summary?.energyProducedKwh ?? 0))} کیلووات ساعت`}
           icon={<Zap size={20} />}
           role="energy"
         />
       </div>
 
-      {/* Row 3 — Area chart (right/60-70%) + Donut chart (left/30-40%) [F §2 R3] */}
-      {/* Phone: chart first, then donut (stacked) [M §6.2] */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-10 lg:gap-4">
-        {/* Area chart — 60-70% width on desktop */}
-        <div className="lg:col-span-7">
-          <TotalInvestedChart
-            series={summary?.investedSeries ?? []}
-            isLoading={summaryLoading}
-            isError={summaryError}
-            onRetry={() => refetchSummary()}
-          />
-        </div>
-        {/* Donut chart — 30-40% width on desktop */}
-        <div className="lg:col-span-3">
-          <AssetAllocationChart
-            data={summary?.allocation ?? []}
-            isLoading={summaryLoading}
-            isError={summaryError}
-            onRetry={() => refetchSummary()}
-          />
-        </div>
-      </div>
+      {/* Row 3 — Total invested area chart (full width) [F §2 R3] */}
+      <TotalInvestedChart
+        series={summary?.investedSeries ?? []}
+        isLoading={summaryLoading}
+        isError={summaryError}
+        onRetry={() => refetchSummary()}
+      />
 
-  
 
-      
 
       {/* Row 6 — Recent Activities [F §2 R4] */}
       <RecentActivitiesTable

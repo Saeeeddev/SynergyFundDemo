@@ -56,21 +56,44 @@ export const toast = {
 }
 
 // Map an unknown error (axios / fetch / generic) to a friendly Farsi message.
+// Centralized so the whole app — including the future login/register backend
+// calls — handles 400/401/403/404/422/429/500 + network/timeout consistently.
 export function toFriendlyMessage(error: unknown): string {
+  const e = error as
+    | {
+        code?: string
+        message?: string
+        response?: { status?: number; data?: { message?: string; error?: string } }
+      }
+    | undefined
+
   // Network-level failure (no response) — the classic "slow/offline" case.
-  const e = error as { code?: string; response?: { status?: number }; message?: string } | undefined
   if (e?.code === 'ERR_NETWORK' || e?.message === 'Network Error') {
     return 'اتصال به سرور برقرار نشد. اتصال اینترنت خود را بررسی کنید.'
   }
+  // Request timed out — slow connection (common in Iran).
+  if (e?.code === 'ECONNABORTED' || e?.code === 'ETIMEDOUT') {
+    return 'پاسخی از سرور دریافت نشد. اینترنت شما ممکن است کند باشد.'
+  }
+
   const status = e?.response?.status
+  // Prefer a server-supplied message when present (e.g. validation errors).
+  const serverMsg = e?.response?.data?.message ?? e?.response?.data?.error
+
+  if (status === 400 || status === 422) {
+    return serverMsg ?? 'اطلاعات ارسال‌شده نامعتبر است. لطفاً ورودی‌ها را بررسی کنید.'
+  }
   if (status === 401 || status === 403) {
-    return 'دسترسی شما منقضی شده است. لطفاً دوباره وارد شوید.'
+    return serverMsg ?? 'دسترسی شما منقضی شده است. لطفاً دوباره وارد شوید.'
+  }
+  if (status === 404) {
+    return serverMsg ?? 'موردی یافت نشد.'
+  }
+  if (status === 429) {
+    return 'تعداد درخواست‌ها زیاد است. لطفاً کمی صبر کنید و دوباره تلاش کنید.'
   }
   if (status && status >= 500) {
     return 'خطایی در سرور رخ داد. لطفاً کمی بعد دوباره تلاش کنید.'
   }
-  if (e?.code === 'ECONNABORTED') {
-    return 'پاسخی از سرور دریافت نشد. اینترنت شما ممکن است کند باشد.'
-  }
-  return 'مشکلی پیش آمد. لطفاً دوباره تلاش کنید.'
+  return serverMsg ?? 'مشکلی پیش آمد. لطفاً دوباره تلاش کنید.'
 }

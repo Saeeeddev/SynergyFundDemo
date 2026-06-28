@@ -4,11 +4,13 @@
 // [D §9.10] ListRow per holding
 // [M §6.4] Sell button must be ≥44px tap target; if row crowded, keep as compact pill on end side
 
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { IconChip } from '@/components/ui/IconChip'
 import { ChangeIndicator } from '@/components/ui/ChangeIndicator'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
+import { Pagination } from '@/components/ui/Pagination'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { Empty } from '@/components/ui/Empty'
 import { Wallet } from 'lucide-react'
@@ -23,8 +25,14 @@ interface HoldingsTableProps {
   onRetry?: () => void
 }
 
+// Client-side page size for current holdings. The list arrives as one array,
+// so we paginate locally — the pager auto-hides at ≤1 page and appears once
+// holdings grow beyond a page.
+const PAGE_SIZE = 5
+
 export function HoldingsTable({ holdings, isLoading, isError, onRetry }: HoldingsTableProps) {
   const router = useRouter()
+  const [page, setPage] = useState(1)
 
   return (
     <Card className="flex flex-col gap-1">
@@ -53,10 +61,15 @@ export function HoldingsTable({ holdings, isLoading, isError, onRetry }: Holding
       )}
 
       {!isLoading && !isError && holdings.length > 0 && (() => {
+        // Weight bar is relative to the WHOLE portfolio, not just the visible page
         const totalValue = holdings.reduce((s, h) => s + h.totalValue, 0)
+        const totalPages = Math.ceil(holdings.length / PAGE_SIZE)
+        const currentPage = Math.min(page, totalPages) || 1
+        const pagedHoldings = holdings.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
         return (
+        <>
         <div className="divide-y divide-border">
-          {holdings.map((h) => {
+          {pagedHoldings.map((h) => {
             // bar = this holding's weight in the overall portfolio (meaningful 0–100)
             const weight = totalValue > 0 ? (h.totalValue / totalValue) * 100 : 0
             return (
@@ -117,6 +130,13 @@ export function HoldingsTable({ holdings, isLoading, isError, onRetry }: Holding
             )
           })}
         </div>
+
+        {totalPages > 1 && (
+          <div className="flex justify-center pt-3">
+            <Pagination page={currentPage} totalPages={totalPages} onPageChange={setPage} />
+          </div>
+        )}
+        </>
         )
       })()}
     </Card>
