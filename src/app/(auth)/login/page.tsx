@@ -65,7 +65,7 @@ export default function LoginPage() {
             className="text-start text-text-muted"
             style={{ fontSize: '12px', lineHeight: '18px' }}
           >
-            لطفاً با اطلاعات مدیریتی خود وارد شوید
+           
           </p>
         </div>
 
