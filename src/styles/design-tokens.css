@@ -75,6 +75,12 @@
 /* ---- RTL direction on html element ---- */
 html[dir="rtl"] { direction: rtl; }
 
+/* ---- Clickable affordance: enabled buttons / role=button show a pointer ---- */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
 /* ---- Body base ---- */
 body {
   background: var(--bg);

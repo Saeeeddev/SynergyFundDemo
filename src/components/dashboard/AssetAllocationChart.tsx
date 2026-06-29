@@ -15,6 +15,7 @@ import { CATEGORICAL_COLORS } from '@/lib/utils/highchartsBase'
 interface AllocationSlice {
   name: string
   value: number
+  watts?: number
 }
 
 interface AssetAllocationChartProps {
@@ -26,6 +27,7 @@ interface AssetAllocationChartProps {
 
 export function AssetAllocationChart({ data, isLoading, isError, onRetry }: AssetAllocationChartProps) {
   const total = data.reduce((sum, s) => sum + s.value, 0)
+  const totalWatts = data.reduce((sum, s) => sum + (s.watts ?? 0), 0)
   const donutData = data.map((s) => ({ name: s.name, y: s.value }))
 
   return (
@@ -38,7 +40,7 @@ export function AssetAllocationChart({ data, isLoading, isError, onRetry }: Asse
           <DonutChart
             data={donutData}
             showLegend={false}
-            height={260}
+            height={340}
             isLoading={isLoading}
             isError={isError}
             onRetry={onRetry}
@@ -57,10 +59,15 @@ export function AssetAllocationChart({ data, isLoading, isError, onRetry }: Asse
                     style={{ backgroundColor: CATEGORICAL_COLORS[i % CATEGORICAL_COLORS.length] }}
                   />
                   <span className="flex-1 text-text truncate">{slice.name}</span>
+                  {slice.watts != null && (
+                    <span className="text-text-muted tabular-nums whitespace-nowrap">
+                      {bidiIsolate(formatNumber(slice.watts / 1000, 0))} کیلووات
+                    </span>
+                  )}
                   <span className="font-semibold text-text tabular-nums">
                     {formatTomanCompact(slice.value)}
                   </span>
-                  <span className="w-12 text-end text-text-muted tabular-nums">
+                  <span className="w-10 text-end text-text-muted tabular-nums">
                     {bidiIsolate(`${formatNumber(pct, 0)}٪`)}
                   </span>
                 </div>
@@ -69,7 +76,14 @@ export function AssetAllocationChart({ data, isLoading, isError, onRetry }: Asse
 
             <div className="flex items-center justify-between border-t border-border mt-2 pt-3 text-[13px] font-semibold">
               <span className="text-text">مجموع سرمایه</span>
-              <span className="text-text tabular-nums">{formatTomanCompact(total)}</span>
+              <span className="flex items-center gap-3">
+                {totalWatts > 0 && (
+                  <span className="text-text-muted tabular-nums">
+                    {bidiIsolate(formatNumber(totalWatts / 1000, 0))} کیلووات
+                  </span>
+                )}
+                <span className="text-text tabular-nums">{formatTomanCompact(total)}</span>
+              </span>
             </div>
           </div>
         )}

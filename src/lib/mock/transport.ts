@@ -6,6 +6,7 @@
 
 import type { Paginated } from "@/types/api";
 import type { Notification } from '@/lib/schemas/user';
+import type { Ticket, TicketCategory } from '@/lib/schemas/support';
 import {
   MOCK_PROJECTS,
   MOCK_DASHBOARD,
@@ -22,6 +23,7 @@ import {
   MOCK_USER,
   MOCK_NOTIFICATIONS,
   MOCK_CASH_CONFIG,
+  MOCK_TICKETS,
 } from "./fixtures";
 
 // ─── Error toggle ─────────────────────────────────────────────────────────────
@@ -146,6 +148,49 @@ export const mockNotifications = {
 
 export const mockCash = {
   config: () => call(() => MOCK_CASH_CONFIG),
+};
+
+// ─── Support tickets ──────────────────────────────────────────────────────────
+
+let _tickets: Ticket[] = MOCK_TICKETS.map((t) => ({ ...t, messages: [...t.messages] }));
+
+export const mockSupport = {
+  list: () => call(() => _tickets.map((t) => ({ ...t, messages: [...t.messages] }))),
+
+  create: (category: TicketCategory, subject: string, message: string) =>
+    call(() => {
+      const now = new Date().toISOString();
+      const id = `tk-${Date.now()}`;
+      const ticket: Ticket = {
+        id,
+        category,
+        subject,
+        status: "open",
+        createdAt: now,
+        messages: [{ id: `${id}-m1`, sender: "user", text: message, date: now }],
+      };
+      _tickets = [ticket, ..._tickets];
+      return { ...ticket, messages: [...ticket.messages] };
+    }),
+
+  reply: (ticketId: string, text: string) =>
+    call(() => {
+      const now = new Date().toISOString();
+      _tickets = _tickets.map((t) =>
+        t.id === ticketId
+          ? {
+              ...t,
+              status: "open",
+              messages: [
+                ...t.messages,
+                { id: `${ticketId}-m${t.messages.length + 1}`, sender: "user", text, date: now },
+              ],
+            }
+          : t,
+      );
+      const updated = _tickets.find((t) => t.id === ticketId)!;
+      return { ...updated, messages: [...updated.messages] };
+    }),
 };
 
 // ─── Investments (buy / sell mutations) ───────────────────────────────────────

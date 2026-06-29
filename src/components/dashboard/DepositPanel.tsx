@@ -5,7 +5,7 @@
 //   • ثبت فیش واریزی   → amount + receipt no. + date + account + upload
 // UI-only: submitting shows a confirmation toast and closes.
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Drawer } from '@/components/ui/Drawer'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
@@ -25,9 +25,11 @@ const MODE_OPTIONS = [
 interface DepositPanelProps {
   open: boolean
   onClose: () => void
+  /** prefill the amount (e.g. the shortfall when redirected from Invest) */
+  initialAmount?: string
 }
 
-export function DepositPanel({ open, onClose }: DepositPanelProps) {
+export function DepositPanel({ open, onClose, initialAmount }: DepositPanelProps) {
   const { data: config } = useCashConfig()
   const gateways = config?.gateways ?? []
   // "به کدام حساب واریز کرده‌اید؟" = which PLATFORM account you paid the receipt to.
@@ -35,6 +37,11 @@ export function DepositPanel({ open, onClose }: DepositPanelProps) {
 
   const [mode, setMode] = useState<Mode>('instant')
   const [amount, setAmount] = useState('')
+
+  // Prefill the amount when opened with an initial value (e.g. Invest shortfall)
+  useEffect(() => {
+    if (open && initialAmount) setAmount(initialAmount)
+  }, [open, initialAmount])
   const [gateway, setGateway] = useState('')
   const [receiptNo, setReceiptNo] = useState('')
   const [account, setAccount] = useState('')

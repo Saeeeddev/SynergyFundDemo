@@ -26,6 +26,8 @@ export interface Project {
   totalCapacityWatts: number;
   description: string;
   createdAt: string;         // ISO date string
+  operationStartDate: string; // ISO date — تاریخ شروع بهره‌برداری
+  progressPercent?: number;   // construction/funding progress 0–100 (mainly for "funding")
 }
 
 // ─── Portfolio ────────────────────────────────────────────────────────────────
@@ -99,7 +101,7 @@ export interface DashboardSummary {
   incomeEarned: number;
   energyProducedKwh: number;
   investedSeries: PerformanceSeries[];
-  allocation: Array<{ name: string; value: number; color?: string }>;
+  allocation: Array<{ name: string; value: number; color?: string; watts?: number }>;
 }
 
 // ─── Payouts ──────────────────────────────────────────────────────────────────

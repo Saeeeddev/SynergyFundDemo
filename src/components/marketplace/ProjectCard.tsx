@@ -9,7 +9,6 @@
 //   shares available, total project value, sold%.
 
 import Image from 'next/image'
-import Link from 'next/link'
 import {
   MapPin,
   CheckCircle2,
@@ -17,10 +16,11 @@ import {
   Lock,
   ChevronLeft,
 } from 'lucide-react'
-import { Button } from '@/components/ui/Button'
+import { NavButton } from '@/components/ui/NavButton'
 import { cn } from '@/lib/utils/cn'
 import { formatToman, formatTomanCompact } from '@/lib/utils/currency'
-import { bidiIsolate, formatNumber, formatPercent } from '@/lib/utils/numbers'
+import { bidiIsolate, formatNumber, formatPercent, formatCompact } from '@/lib/utils/numbers'
+import { formatJalali } from '@/lib/utils/jalali'
 import type { Project, ProjectStatus } from '@/types/domain'
 
 interface ProjectCardProps {
@@ -57,11 +57,12 @@ const STATUS_CONFIG: Record<
 export function ProjectCard({ project, className }: ProjectCardProps) {
   const status = STATUS_CONFIG[project.status]
 
-  const capacityKw = project.totalCapacityWatts / 1000
+  const capacityMw = project.totalCapacityWatts / 1_000_000
   const sharesAvailable = Math.round(
     project.totalCapacityWatts * (1 - project.soldPercent / 100),
   )
   const totalValue = project.totalCapacityWatts * project.sharePrice
+  const pricePerKw = project.sharePrice * 1000
   const reference = `SYN-${project.id.replace(/[^0-9]/g, '').padStart(3, '0')}`
 
   return (
@@ -90,7 +91,7 @@ export function ProjectCard({ project, className }: ProjectCardProps) {
         {/* Capacity badge — start/top (solid white for legibility) */}
         <div className="absolute top-3 start-3">
           <span className="inline-flex items-center rounded-pill bg-white px-2.5 py-1 text-[11px] font-bold text-blue-deep shadow-sm tabular-nums">
-            {bidiIsolate(formatNumber(capacityKw, 0))} کیلووات
+            {bidiIsolate(formatNumber(capacityMw, 1))} مگاوات
           </span>
         </div>
 
@@ -120,22 +121,28 @@ export function ProjectCard({ project, className }: ProjectCardProps) {
           {project.name}
         </h3>
 
-        {/* Location */}
-        <div className="flex items-center gap-1.5 text-[13px] text-text-muted -mt-2">
-          <MapPin size={14} className="shrink-0 text-text-subtle" />
-          <span className="truncate">{project.location}</span>
+        {/* Location + operation start date below it */}
+        <div className="flex flex-col gap-1 -mt-2">
+          <div className="flex items-center gap-1.5 text-[13px] text-text-muted">
+            <MapPin size={14} className="shrink-0 text-text-subtle" />
+            <span className="truncate">{project.location}</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-[12px] text-text-subtle ps-[20px]">
+            <span>شروع بهره‌برداری:</span>
+            <span className="tabular-nums">{formatJalali(project.operationStartDate)}</span>
+          </div>
         </div>
 
-        {/* 2 stat boxes (asas wells) — capacity + target yield */}
+        {/* 2 stat boxes (asas wells) — available shares + forecast yield */}
         <div className="grid grid-cols-2 gap-2">
           <div className="rounded-chip bg-surface-2 border border-border p-2.5">
-            <div className="text-[11px] text-text-muted">ظرفیت کل</div>
+            <div className="text-[11px] text-text-muted">سهام موجود (وات)</div>
             <div className="text-[14px] font-semibold text-text tabular-nums">
-              {bidiIsolate(formatNumber(capacityKw, 0))} کیلووات
+              {bidiIsolate(formatCompact(sharesAvailable))}
             </div>
           </div>
           <div className="rounded-chip bg-surface-2 border border-border p-2.5">
-            <div className="text-[11px] text-text-muted">بازده سالانه</div>
+            <div className="text-[11px] text-text-muted">پیش‌بینی بازده سالانه</div>
             <div className="text-[14px] font-semibold text-green-deep tabular-nums">
               {bidiIsolate(formatPercent(project.targetYield))}
             </div>
@@ -158,28 +165,46 @@ export function ProjectCard({ project, className }: ProjectCardProps) {
           </div>
         </div>
 
+        {/* Funding projects: extra construction/funding progress bar */}
+        {project.status === 'funding' && project.progressPercent != null && (
+          <div>
+            <div className="flex justify-between text-[11px] text-text-muted mb-1">
+              <span>پیشرفت ساخت پروژه</span>
+              <span className="tabular-nums font-medium text-text-2">
+                {bidiIsolate(`${formatNumber(project.progressPercent, 0)}٪`)}
+              </span>
+            </div>
+            <div className="h-1.5 rounded-pill bg-hover overflow-hidden">
+              <div
+                className="h-full rounded-pill bg-blue-base transition-all duration-500"
+                style={{ width: `${project.progressPercent}%` }}
+              />
+            </div>
+          </div>
+        )}
+
         {/* 2×2 key metrics — share-buying details */}
         <div className="grid grid-cols-2 gap-x-3 gap-y-3 pt-1">
-          <Metric label="قیمت هر سهم" value={formatToman(project.sharePrice)} />
+          <Metric label="قیمت هر کیلووات" value={formatToman(pricePerKw)} />
           <Metric label="حداقل سرمایه" value={formatToman(project.minInvestment)} />
-          <Metric label="سهام موجود (وات)" value={bidiIsolate(formatNumber(sharesAvailable))} />
+          <Metric label="ظرفیت کل (مگاوات)" value={bidiIsolate(formatNumber(capacityMw, 1))} />
           <Metric label="ارزش کل پروژه" value={formatTomanCompact(totalValue)} />
         </div>
 
-        {/* Footer action bar (asas) */}
+        {/* Footer action bar (asas) — NavButton shows a spinner during navigation */}
         <div className="-mx-4 -mb-4 mt-auto border-t border-border bg-surface-2 px-4 py-3 flex items-center gap-2">
-          <Link
+          <NavButton
             href={`/project/${project.id}`}
-            className="flex items-center gap-1 text-[13px] font-medium text-blue-base hover:text-blue-deep transition-colors"
+            variant="ghost"
+            size="compact"
+            iconEnd={<ChevronLeft size={16} />}
+            className="px-0 text-blue-base hover:text-blue-deep hover:bg-transparent"
           >
-            <span>مشاهده جزئیات</span>
-            <ChevronLeft size={16} />
-          </Link>
-          <Link href={`/invest/${project.id}`} className="ms-auto">
-            <Button variant="primary" size="compact" className="px-4">
-              سرمایه‌گذاری
-            </Button>
-          </Link>
+            مشاهده جزئیات
+          </NavButton>
+          <NavButton href={`/invest/${project.id}`} variant="primary" size="compact" className="ms-auto px-4">
+            سرمایه‌گذاری
+          </NavButton>
         </div>
       </div>
     </div>

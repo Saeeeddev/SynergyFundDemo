@@ -7,7 +7,7 @@
 import { TrendingUp, DollarSign, Zap, BarChart2, LayoutDashboard } from 'lucide-react'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { CashSection } from '@/components/dashboard/CashSection'
-import { PaymentMethodsCard } from '@/components/dashboard/PaymentMethodsCard'
+import { ProjectShowcaseCard } from '@/components/dashboard/ProjectShowcaseCard'
 import { TotalInvestedChart } from '@/components/dashboard/TotalInvestedChart'
 import { AssetAllocationChart } from '@/components/dashboard/AssetAllocationChart'
 import { RecentActivitiesTable } from '@/components/dashboard/RecentActivitiesTable'
@@ -31,24 +31,29 @@ export default function DashboardPage() {
         subtitle="نمای کلی سرمایه‌گذاری‌ها، دارایی‌ها و درآمد شما"
       />
 
-      {/* Row 1 — Cash + payment methods (start) beside ترکیب دارایی (end) */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-4 lg:items-start">
+      {/* Row 1 — Cash + my-projects showcase (start) beside ترکیب دارایی (end) */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-4 lg:items-stretch">
         <div className="flex flex-col gap-4">
           <CashSection balance={summary?.cashBalance ?? 0} />
-          <PaymentMethodsCard />
+          {/* flex-1 so the showcase image grows to match the donut card height */}
+          <div className="flex-1 flex flex-col">
+            <ProjectShowcaseCard />
+          </div>
         </div>
-        <AssetAllocationChart
-          data={summary?.allocation ?? []}
-          isLoading={summaryLoading}
-          isError={summaryError}
-          onRetry={() => refetchSummary()}
-        />
+        <div>
+          <AssetAllocationChart
+            data={summary?.allocation ?? []}
+            isLoading={summaryLoading}
+            isError={summaryError}
+            onRetry={() => refetchSummary()}
+          />
+        </div>
       </div>
 
       {/* Row 2 — Four KPI StatCards [F §2 R2] — 2×2 on phone, 4-up on desktop [M §6.2] */}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
         <StatCard
-          label="کل سرمایه‌گذاری"
+          label="کل سرمایه‌گذاری اولیه"
           value={summaryLoading ? '…' : formatToman(summary?.totalInvested ?? 0)}
           icon={<DollarSign size={20} />}
           role="positive"

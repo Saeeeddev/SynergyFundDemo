@@ -41,12 +41,12 @@ const COLUMNS: TableColumn<Activity>[] = [
   },
   {
     key: 'shares',
-    header: 'تعداد وات',
+    header: 'تعداد سهم (کیلو وات)',
     numeric: true,
     render: (row) =>
       row.shares ? (
         <span className="tabular-nums text-text-2">
-          {bidiIsolate(formatNumber(row.shares))}
+          {bidiIsolate(formatNumber(row.shares / 1000, 1))}
         </span>
       ) : (
         <span className="text-text-subtle">—</span>
@@ -140,9 +140,9 @@ export function RecentActivitiesTable({
                 </div>
                 {act.shares != null && (
                   <div className="flex justify-between text-[13px]">
-                    <span className="text-text-muted">وات</span>
+                    <span className="text-text-muted">تعداد سهم (کیلو وات)</span>
                     <span className="tabular-nums text-text-2">
-                      {bidiIsolate(formatNumber(act.shares))}
+                      {bidiIsolate(formatNumber(act.shares / 1000, 1))}
                     </span>
                   </div>
                 )}

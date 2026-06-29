@@ -1,118 +1,114 @@
 'use client'
 
 import { Card } from '@/components/ui/Card'
-import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
+import { Minus, Plus } from 'lucide-react'
 import { formatToman } from '@/lib/utils/currency'
-import { formatNumber, formatCompact, bidiIsolate, groupDigits, onlyDigits } from '@/lib/utils/numbers'
+import { bidiIsolate, formatNumber, onlyDigits, toPersianDigits } from '@/lib/utils/numbers'
 import type { Project } from '@/types/domain'
 
-// [F §10 Step1 Right-middle] Amount input + presets + green investment summary
-// [D §9.18] Input, preset pills, green summary well
-// [M §7.5] inputMode="numeric", 48px on phone
+// [F §10 Step1] Share quantity picker — the user buys whole KILOWATTS (min 1 kW).
+// Stepper (− / value / +) + quick presets. No summary well here — the live
+// figures live in the review box. [M §7.5]
 
 interface InvestmentAmountBoxProps {
   project: Project
-  amount: string
-  onAmountChange: (v: string) => void
-  cashBalance: number
-  shares: number
-  ownershipPct: number
-  annualIncome: number
-  monthlyPayout: number
+  /** quantity in kilowatts, as a raw digit string */
+  kw: string
+  onKwChange: (v: string) => void
+  /** maximum buyable kW (available shares) */
+  maxKw: number
+  /** price of one kilowatt (Toman) */
+  pricePerKw: number
 }
 
-// Presets: 1×, 2×, 5×, 10× min investment
-function buildPresets(minInvestment: number) {
-  return [1, 2, 5, 10].map(m => minInvestment * m)
-}
+const PRESETS = [1, 5, 10, 50]
 
-export function InvestmentAmountBox({
-  project,
-  amount,
-  onAmountChange,
-  cashBalance,
-  shares,
-  ownershipPct,
-  annualIncome,
-  monthlyPayout,
-}: InvestmentAmountBoxProps) {
-  const parsed = parseFloat(amount.replace(/[^0-9.]/g, '')) || 0
-  const presets = buildPresets(project.minInvestment)
+export function InvestmentAmountBox({ kw, onKwChange, maxKw, pricePerKw }: InvestmentAmountBoxProps) {
+  const value = parseInt(onlyDigits(kw), 10) || 0
+  const clamp = (n: number) => Math.max(0, Math.min(maxKw, n))
+  const setVal = (n: number) => onKwChange(String(clamp(n)))
 
-  const amountError =
-    parsed > 0 && parsed < project.minInvestment
-      ? `حداقل سرمایه‌گذاری ${formatToman(project.minInvestment)} است`
-      : parsed > cashBalance && parsed > 0
-      ? 'موجودی کافی نیست'
-      : undefined
-
-  const showSummary = parsed >= project.minInvestment && shares > 0
+  const amount = value * pricePerKw
+  const tooHigh = value > maxKw
 
   return (
     <Card className="p-4 flex flex-col gap-4">
-      <h3 className="text-[13px] font-medium text-text-muted">مبلغ سرمایه‌گذاری</h3>
+      <h3 className="text-[13px] font-medium text-text-muted">تعداد سهام (کیلو وات)</h3>
 
-      {/* Amount input [D §9.18, M §7.5] */}
-      <Input
-        label="مبلغ (تومان)"
-        value={groupDigits(amount)}
-        onChange={e => onAmountChange(onlyDigits(e.target.value))}
-        inputMode="numeric"
-        placeholder="مبلغ را وارد کنید"
-        error={amountError}
-        dir="ltr"
-      />
-
-      {/* Min + balance info */}
-      <div className="flex justify-between text-[12px] text-text-muted -mt-2">
-        <span>حداقل: {formatToman(project.minInvestment)}</span>
-        <span>موجودی: {formatToman(cashBalance)}</span>
+      {/* Stepper */}
+      <div className="flex items-center gap-2">
+        <StepBtn ariaLabel="کاهش" disabled={value <= 1} onClick={() => setVal(value - 1)}>
+          <Minus size={18} />
+        </StepBtn>
+        <input
+          dir="ltr"
+          inputMode="numeric"
+          value={value === 0 ? '' : toPersianDigits(String(value))}
+          onChange={(e) => setVal(parseInt(onlyDigits(e.target.value), 10) || 0)}
+          placeholder="۱"
+          className="flex-1 h-12 md:h-11 rounded-md border border-border-strong bg-surface text-center text-[18px] font-bold text-text tabular-nums focus:outline-none focus:ring-2 focus:ring-green-tint focus:border-green-base"
+        />
+        <StepBtn ariaLabel="افزایش" disabled={value >= maxKw} onClick={() => setVal(value + 1)}>
+          <Plus size={18} />
+        </StepBtn>
       </div>
 
-      {/* 4 preset pills [F §10, D §9.18] — each ≥44px tap target [M §4] */}
+      {/* Min / available info */}
+      <div className="flex justify-between text-[12px] text-text-muted">
+        <span>حداقل: {bidiIsolate(formatNumber(1))} کیلو وات</span>
+        <span>موجود: {bidiIsolate(formatNumber(maxKw))} کیلو وات</span>
+      </div>
+
+      {/* Quick presets (skip those above availability) */}
       <div className="grid grid-cols-4 gap-2">
-        {presets.map((preset, i) => {
-          const isActive = parsed === preset
-          return (
-            <Button
-              key={i}
-              variant={isActive ? 'primary' : 'secondary'}
-              size="compact"
-              shape="pill"
-              onClick={() => onAmountChange(String(preset))}
-              className="text-[11px] px-1"
-            >
-              {formatCompact(preset)}
-            </Button>
-          )
-        })}
+        {PRESETS.filter((p) => p <= maxKw).map((p) => (
+          <Button
+            key={p}
+            variant={value === p ? 'primary' : 'secondary'}
+            size="compact"
+            shape="pill"
+            onClick={() => setVal(p)}
+            className="text-[12px]"
+          >
+            {bidiIsolate(formatNumber(p))}
+          </Button>
+        ))}
       </div>
 
-      {/* Green Investment Summary well [D §9.18, F §10] */}
-      {showSummary && (
-        <div
-          className="bg-green-tint border-s-2 border-green-base rounded-md p-3 flex flex-col gap-2.5"
-          aria-label="خلاصه سرمایه‌گذاری"
-        >
-          <p className="text-[12px] font-semibold text-green-deep">خلاصه سرمایه‌گذاری</p>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-            <SummaryRow label="تعداد سهام"    value={`${bidiIsolate(formatNumber(shares))} وات`} />
-            <SummaryRow label="درصد مالکیت"   value={`${bidiIsolate(formatNumber(ownershipPct, 4))}٪`} />
-            <SummaryRow label="درآمد سالانه"  value={formatToman(annualIncome)} />
-            <SummaryRow label="پرداخت ماهانه" value={formatToman(monthlyPayout)} />
-          </div>
-        </div>
+      {/* Cost of the selected quantity */}
+      <div className="flex justify-between border-t border-border pt-3 text-[14px]">
+        <span className="text-text-muted">مبلغ قابل پرداخت</span>
+        <span className="font-semibold text-text tabular-nums">{formatToman(amount)}</span>
+      </div>
+
+      {tooHigh && (
+        <p className="text-[12px] text-red-base">تعداد انتخابی بیش از سهام موجود پروژه است.</p>
       )}
     </Card>
   )
 }
 
-function SummaryRow({ label, value }: { label: string; value: string }) {
+function StepBtn({
+  children,
+  onClick,
+  disabled,
+  ariaLabel,
+}: {
+  children: React.ReactNode
+  onClick: () => void
+  disabled?: boolean
+  ariaLabel: string
+}) {
   return (
-    <div className="flex flex-col gap-0.5">
-      <span className="text-[11px] text-green-soft">{label}</span>
-      <span className="text-[12px] font-semibold text-green-deep tabular-nums">{value}</span>
-    </div>
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={ariaLabel}
+      className="flex items-center justify-center w-12 h-12 md:w-11 md:h-11 rounded-md border border-border-strong bg-surface text-text hover:bg-hover disabled:opacity-40 disabled:cursor-not-allowed transition-colors shrink-0"
+    >
+      {children}
+    </button>
   )
 }

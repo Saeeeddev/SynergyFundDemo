@@ -32,10 +32,10 @@ const COLUMNS: TableColumn<Investment>[] = [
   },
   {
     key: 'sharesCount',
-    header: 'تعداد وات',
+    header: 'تعداد سهم (کیلو وات)',
     numeric: true,
     render: (row) => (
-      <span className="tabular-nums text-text-2">{bidiIsolate(formatNumber(row.sharesCount))}</span>
+      <span className="tabular-nums text-text-2">{bidiIsolate(formatNumber(row.sharesCount / 1000, 1))}</span>
     ),
   },
   {
@@ -151,7 +151,7 @@ function MobileList() {
           <div className="flex flex-col items-end gap-0.5 shrink-0">
             <span className="text-[14px] tabular-nums text-text-2">{formatToman(o.totalAmount)}</span>
             <span className="text-[12px] tabular-nums text-text-muted">
-              {bidiIsolate(formatNumber(o.sharesCount))} وات
+              {bidiIsolate(formatNumber(o.sharesCount / 1000, 1))} کیلو وات
             </span>
           </div>
         </div>

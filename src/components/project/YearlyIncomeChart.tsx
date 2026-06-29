@@ -8,6 +8,8 @@
 import { useEffect, useState, useMemo } from 'react'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { CHART_COLORS, CHART_FONT } from '@/lib/utils/highchartsBase'
+import { formatCompact } from '@/lib/utils/numbers'
+import { formatTomanCompact } from '@/lib/utils/currency'
 import type { ForecastYearData } from '@/types/domain'
 
 interface YearlyIncomeChartProps {
@@ -67,9 +69,7 @@ export function YearlyIncomeChart({ yearlyData, height = 280 }: YearlyIncomeChar
         formatter() {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const v = (this as any).value as number
-          if (Math.abs(v) >= 1_000_000) return `${(v / 1_000_000).toFixed(0)}م`
-          if (Math.abs(v) >= 1_000) return `${(v / 1_000).toFixed(0)}ه`
-          return String(v)
+          return formatCompact(v)
         },
       },
     },
@@ -92,8 +92,7 @@ export function YearlyIncomeChart({ yearlyData, height = 280 }: YearlyIncomeChar
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const self = this as any
         const v = self.y as number
-        const m = v >= 1_000_000 ? `${(v / 1_000_000).toFixed(1)} میلیون تومان` : `${(v / 1_000).toFixed(0)} هزار تومان`
-        return `<b>${self.x}</b><br/>درآمد: ${m}`
+        return `<b>${self.x}</b><br/>درآمد: ${formatTomanCompact(v)}`
       },
     },
     legend: { enabled: false },

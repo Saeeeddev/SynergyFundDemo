@@ -7,6 +7,7 @@
 import { use, useEffect, useState, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { onlyDigits } from '@/lib/utils/numbers'
+import { toast } from '@/lib/toast'
 import { useProject } from '@/lib/hooks/useProjects'
 import { useDashboard } from '@/lib/hooks/usePortfolio'
 import { useBuyWatts } from '@/lib/hooks/useInvestments'
@@ -14,7 +15,6 @@ import { InvestStepper } from '@/components/invest/InvestStepper'
 import { SelectedAssetBox } from '@/components/invest/SelectedAssetBox'
 import { InvestmentAmountBox } from '@/components/invest/InvestmentAmountBox'
 import { InvestmentReviewBox } from '@/components/invest/InvestmentReviewBox'
-import { FundingSourceBox } from '@/components/invest/FundingSourceBox'
 import type { FundingSource } from '@/components/invest/FundingSourceBox'
 import { ReviewStep } from '@/components/invest/ReviewStep'
 import { CompleteStep } from '@/components/invest/CompleteStep'
@@ -44,8 +44,8 @@ export default function InvestPage({ params }: InvestPageProps) {
 
   // ── Form state ────────────────────────────────────────────────────────────────
   const [step, setStep]               = useState<Step>(1)
-  // Prefill with the amount carried over from the project calculator (if any).
-  const [amount, setAmount]           = useState(() => onlyDigits(searchParams.get('amount') ?? ''))
+  // Quantity is in whole KILOWATTS (min 1 kW). Prefill from the calculator (?kw=).
+  const [kw, setKw]                   = useState(() => onlyDigits(searchParams.get('kw') ?? ''))
   const [fundingSource, setFunding]   = useState<FundingSource>('platform')
   const [rules1, setRules1]           = useState(false)
   const [rules2, setRules2]           = useState(false)
@@ -58,25 +58,43 @@ export default function InvestPage({ params }: InvestPageProps) {
   }, [isLoading, isError, project, router])
 
   // ── Derived values ────────────────────────────────────────────────────────────
-  const parsed = useMemo(
-    () => parseFloat(amount.replace(/[^0-9.]/g, '')) || 0,
-    [amount],
-  )
   const cashBalance  = dashboard?.cashBalance ?? 0
   const sharePrice   = project?.sharePrice ?? 1
   const totalCap     = project?.totalCapacityWatts ?? 1
   const targetYield  = project?.targetYield ?? 0
+  const soldPercent  = project?.soldPercent ?? 0
 
-  const shares       = useMemo(() => Math.floor(parsed / sharePrice), [parsed, sharePrice])
+  const pricePerKw   = sharePrice * 1000
+  // Available shares (watts) and the maximum buyable kW
+  const availableWatts = Math.round(totalCap * (1 - soldPercent / 100))
+  const maxKw        = Math.floor(availableWatts / 1000)
+
+  const parsedKw     = useMemo(() => parseInt(kw.replace(/[^0-9]/g, ''), 10) || 0, [kw])
+  const shares       = useMemo(() => parsedKw * 1000, [parsedKw]) // watts
+  const investmentAmount = useMemo(() => shares * sharePrice, [shares, sharePrice])
   const ownershipPct = useMemo(() => (shares / totalCap) * 100, [shares, totalCap])
-  const annualIncome = useMemo(() => shares * sharePrice * (targetYield / 100), [shares, sharePrice, targetYield])
+  const annualIncome = useMemo(() => investmentAmount * (targetYield / 100), [investmentAmount, targetYield])
   const monthlyPayout = useMemo(() => annualIncome / 12, [annualIncome])
   const feeRate      = fundingSource === 'platform' ? PLATFORM_FEE : BANK_FEE
-  const fee          = parsed * feeRate
-  const total        = parsed + fee
+  const fee          = investmentAmount * feeRate
+  const total        = investmentAmount + fee
 
-  const isValidAmount = parsed >= (project?.minInvestment ?? 0) && parsed <= cashBalance && parsed > 0
+  // Min 1 kW, cannot exceed available shares. Balance is NOT a hard block here —
+  // if the platform balance is short, we send the user to top up (see handleProceed).
+  const isValidAmount = parsedKw >= 1 && parsedKw <= maxKw
   const canProceed    = isValidAmount && rules1 && rules2
+
+  // Step 1 → 2. If paying from platform balance and it's not enough, redirect to
+  // deposit prefilled with the shortfall. Bank transfer has no balance check.
+  const handleProceed = () => {
+    if (fundingSource === 'platform' && total > cashBalance) {
+      const shortfall = Math.ceil(total - cashBalance)
+      toast.error('موجودی پلتفرم کافی نیست. لطفاً حساب خود را شارژ کنید.')
+      router.push(`/dashboard?deposit=${shortfall}`)
+      return
+    }
+    setStep(2)
+  }
 
   // ── Loading state ─────────────────────────────────────────────────────────────
   if (isLoading) {
@@ -136,45 +154,38 @@ export default function InvestPage({ params }: InvestPageProps) {
         // Desktop RTL grid: first child → RIGHT (3 boxes, 2fr), second child → LEFT (ReviewBox, 1fr)
         // Mobile: single column stack — SelectedAsset → Amount → FundingSource → sticky ReviewBox
         // Bottom padding on mobile so the sticky ReviewBox doesn't cover the last card [M §6.8]
-        <div className="flex flex-col gap-4 lg:grid lg:grid-cols-3 lg:gap-5 lg:items-start pb-[280px] lg:pb-0">
+        <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[65fr_35fr] lg:gap-5 lg:items-start pb-[280px] lg:pb-0">
 
-          {/* RIGHT side (3 stacked boxes) — first in DOM = right in RTL grid [F §10] */}
-          <div className="flex flex-col gap-4 lg:col-span-2">
+          {/* RIGHT side (65%) — large selected asset; sticky to cut scrolling */}
+          <div className="lg:sticky lg:top-3">
             <SelectedAssetBox project={project} />
-            <InvestmentAmountBox
-              project={project}
-              amount={amount}
-              onAmountChange={setAmount}
-              cashBalance={cashBalance}
-              shares={shares}
-              ownershipPct={ownershipPct}
-              annualIncome={annualIncome}
-              monthlyPayout={monthlyPayout}
-            />
-            <FundingSourceBox
-              fundingSource={fundingSource}
-              onFundingSourceChange={setFunding}
-              amount={parsed}
-              platformFeeRate={PLATFORM_FEE}
-              bankFeeRate={BANK_FEE}
-            />
           </div>
 
-          {/* LEFT side (ReviewBox) — second in DOM = left in RTL grid [F §10].
-              Sticky on desktop so the live summary + CTA stay visible while editing. */}
-          <div className="lg:col-span-1 lg:sticky lg:top-3">
+          {/* LEFT side (35%) — تعداد سهام (kW) → خلاصه سرمایه‌گذاری (با منبع تأمین مالی) */}
+          <div className="flex flex-col gap-4">
+            <InvestmentAmountBox
+              project={project}
+              kw={kw}
+              onKwChange={setKw}
+              maxKw={maxKw}
+              pricePerKw={pricePerKw}
+            />
             <InvestmentReviewBox
               shares={shares}
               ownershipPct={ownershipPct}
               annualIncome={annualIncome}
               monthlyPayout={monthlyPayout}
-              investmentAmount={parsed}
+              investmentAmount={investmentAmount}
+              fee={fee}
+              total={total}
+              fundingSource={fundingSource}
+              onFundingSourceChange={setFunding}
               rules1={rules1}
               rules2={rules2}
               onRules1Change={setRules1}
               onRules2Change={setRules2}
               canProceed={canProceed}
-              onNext={() => setStep(2)}
+              onNext={handleProceed}
             />
           </div>
         </div>
@@ -188,7 +199,7 @@ export default function InvestPage({ params }: InvestPageProps) {
           ownershipPct={ownershipPct}
           annualIncome={annualIncome}
           monthlyPayout={monthlyPayout}
-          investmentAmount={parsed}
+          investmentAmount={investmentAmount}
           fee={fee}
           total={total}
           fundingSource={fundingSource}
@@ -202,7 +213,7 @@ export default function InvestPage({ params }: InvestPageProps) {
         <CompleteStep
           projectName={project.name}
           shares={shares}
-          investmentAmount={parsed}
+          investmentAmount={investmentAmount}
         />
       )}
     </div>

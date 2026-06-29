@@ -1,21 +1,22 @@
 'use client'
 
-// [F §4 R3] Portfolio Row 3: Current Holdings with per-row Sell button
-// [D §9.10] ListRow per holding
-// [M §6.4] Sell button must be ≥44px tap target; if row crowded, keep as compact pill on end side
+// [F §4 R3] Current holdings — ONE card: a clickable price/P&L table (start/right)
+// and a "details" panel (end/left) for the selected holding (defaults to first).
+// Table columns deliberately avoid what the details panel already shows.
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { IconChip } from '@/components/ui/IconChip'
-import { ChangeIndicator } from '@/components/ui/ChangeIndicator'
+import Image from 'next/image'
+import { MapPin, ChevronLeft, Wallet } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
-import { Button } from '@/components/ui/Button'
+import { NavButton } from '@/components/ui/NavButton'
 import { Pagination } from '@/components/ui/Pagination'
+import { ChangeIndicator } from '@/components/ui/ChangeIndicator'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { Empty } from '@/components/ui/Empty'
-import { Wallet } from 'lucide-react'
+import { cn } from '@/lib/utils/cn'
 import { formatToman } from '@/lib/utils/currency'
 import { bidiIsolate, formatNumber, formatPercent } from '@/lib/utils/numbers'
+import { useProject } from '@/lib/hooks/useProjects'
 import type { Holding } from '@/lib/schemas/portfolio'
 
 interface HoldingsTableProps {
@@ -25,120 +26,186 @@ interface HoldingsTableProps {
   onRetry?: () => void
 }
 
-// Client-side page size for current holdings. The list arrives as one array,
-// so we paginate locally — the pager auto-hides at ≤1 page and appears once
-// holdings grow beyond a page.
-const PAGE_SIZE = 5
+const PAGE_SIZE = 6
 
 export function HoldingsTable({ holdings, isLoading, isError, onRetry }: HoldingsTableProps) {
-  const router = useRouter()
+  const [selectedId, setSelectedId] = useState<string | null>(null)
   const [page, setPage] = useState(1)
 
+  const selected = holdings.find((h) => h.projectId === selectedId) ?? holdings[0] ?? null
+
+  if (isLoading) {
+    return <div className="skeleton h-80 rounded-card" />
+  }
+
+  if (isError) {
+    return (
+      <Card>
+        <ErrorState scope="inline" onRetry={onRetry} />
+      </Card>
+    )
+  }
+
+  if (holdings.length === 0) {
+    return (
+      <Card>
+        <h2 className="text-[15px] font-semibold text-text mb-3">دارایی‌های فعلی</h2>
+        <Empty icon={<Wallet size={48} />} message="هنوز سرمایه‌گذاری‌ای ندارید" />
+      </Card>
+    )
+  }
+
+  const totalPages = Math.ceil(holdings.length / PAGE_SIZE)
+  const currentPage = Math.min(page, totalPages) || 1
+  const paged = holdings.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
+
   return (
-    <Card className="flex flex-col gap-1">
-      <h2 className="text-[15px] font-semibold text-text mb-3">دارایی‌های فعلی</h2>
+    <Card className="p-0 overflow-hidden rounded-[20px]">
+      <div className="grid grid-cols-1 lg:grid-cols-3 lg:items-stretch">
+        {/* Table — right (first DOM), 2/3 */}
+        <div className="lg:col-span-2 flex flex-col gap-3 p-4">
+          <h2 className="text-[15px] font-semibold text-text">دارایی‌های فعلی</h2>
 
-      {isLoading && (
-        <div className="flex flex-col gap-3">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="skeleton h-16 rounded-md" />
-          ))}
-        </div>
-      )}
+          <div className="overflow-x-auto">
+            <table className="w-full text-[13px] border-collapse min-w-[640px]">
+              <thead>
+                <tr className="text-text-muted text-[12px] border-b border-border">
+                  <th className="text-start font-medium px-3 py-2.5">نماد</th>
+                  <th className="text-center font-medium px-3 py-2.5">سهم شما (کیلو وات)</th>
+                  <th className="text-center font-medium px-3 py-2.5">قیمت روز هر کیلووات</th>
+                  <th className="text-center font-medium px-3 py-2.5">سود و زیان فعلی</th>
+                  <th className="text-center font-medium px-3 py-2.5">ارزش فعلی</th>
+                  <th className="text-center font-medium px-3 py-2.5 w-12">جزئیات</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paged.map((h) => {
+                  const isSel = h.projectId === selected?.projectId
+                  return (
+                    <tr
+                      key={h.projectId}
+                      onClick={() => setSelectedId(h.projectId)}
+                      className={cn(
+                        'cursor-pointer border-b border-border/70 last:border-0 transition-colors',
+                        isSel ? 'bg-blue-tint' : 'hover:bg-hover',
+                      )}
+                    >
+                      <td className="px-3 py-3">
+                        <div className="flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-full bg-green-base shrink-0" />
+                          <span className="font-medium text-text truncate">{h.projectName}</span>
+                        </div>
+                      </td>
+                      <td className="px-3 py-3 text-center tabular-nums text-text-2">
+                        {bidiIsolate(formatNumber(h.sharesOwned / 1000, 1))}
+                      </td>
+                      <td className="px-3 py-3 text-center tabular-nums text-text-2">
+                        {formatToman(h.currentPrice * 1000)}
+                      </td>
+                      <td className="px-3 py-3">
+                        <div className="flex flex-col items-center gap-1">
+                          <span
+                            className={cn(
+                              'tabular-nums font-medium',
+                              h.pnl >= 0 ? 'text-green-deep' : 'text-red-base',
+                            )}
+                          >
+                            {formatToman(h.pnl)}
+                          </span>
+                          <ChangeIndicator value={h.pnlPercent} variant="pill" />
+                        </div>
+                      </td>
+                      <td className="px-3 py-3 text-center tabular-nums font-semibold text-text">
+                        {formatToman(h.totalValue)}
+                      </td>
+                      <td className="px-3 py-3 text-center">
+                        <span
+                          className={cn(
+                            'inline-flex items-center justify-center w-8 h-8 rounded-md transition-colors',
+                            isSel ? 'text-blue-deep bg-white/60' : 'text-blue-base',
+                          )}
+                        >
+                          <ChevronLeft size={18} />
+                        </span>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
 
-      {!isLoading && isError && <ErrorState scope="inline" onRetry={onRetry} />}
-
-      {!isLoading && !isError && holdings.length === 0 && (
-        <Empty
-          icon={<Wallet size={48} />}
-          message="هنوز سرمایه‌گذاری‌ای ندارید — اولین پروژه را انتخاب کنید"
-          action={
-            <Button variant="primary" onClick={() => router.push('/marketplace')}>
-              رفتن به بازار
-            </Button>
-          }
-        />
-      )}
-
-      {!isLoading && !isError && holdings.length > 0 && (() => {
-        // Weight bar is relative to the WHOLE portfolio, not just the visible page
-        const totalValue = holdings.reduce((s, h) => s + h.totalValue, 0)
-        const totalPages = Math.ceil(holdings.length / PAGE_SIZE)
-        const currentPage = Math.min(page, totalPages) || 1
-        const pagedHoldings = holdings.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
-        return (
-        <>
-        <div className="divide-y divide-border">
-          {pagedHoldings.map((h) => {
-            // bar = this holding's weight in the overall portfolio (meaningful 0–100)
-            const weight = totalValue > 0 ? (h.totalValue / totalValue) * 100 : 0
-            return (
-              <div key={h.projectId} className="flex flex-col gap-2.5 py-4">
-                {/* Top line: asset + value + P/L + sell */}
-                <div className="flex items-center gap-3">
-                  <IconChip
-                    role="positive"
-                    size="sm"
-                    icon={<span className="text-[11px] font-bold leading-none">{h.projectName.slice(0, 2)}</span>}
-                  />
-                  <div className="flex-1 min-w-0 flex flex-col gap-0.5">
-                    <span className="text-sm font-semibold text-text leading-tight truncate">
-                      {h.projectName}
-                    </span>
-                    <span className="text-xs text-text-muted leading-tight truncate">
-                      {h.projectLocation}
-                    </span>
-                  </div>
-                  <div className="flex flex-col items-end gap-1 shrink-0">
-                    <span className="text-sm font-semibold text-text tabular-nums whitespace-nowrap">
-                      {formatToman(h.totalValue)}
-                    </span>
-                    <ChangeIndicator value={h.pnlPercent} variant="pill" />
-                  </div>
-                  <Button
-                    variant="destructive"
-                    size="compact"
-                    onClick={() => router.push(`/sell/${h.projectId}`)}
-                    className="min-h-[44px] px-3 shrink-0"
-                  >
-                    فروش
-                  </Button>
-                </div>
-
-                {/* Ownership share + portfolio-weight bar */}
-                <div className="flex items-center gap-3 ps-11">
-                  <span className="text-[12px] text-text-muted whitespace-nowrap">
-                    مالکیت شما:{' '}
-                    <span className="font-semibold text-text-2 tabular-nums">
-                      {bidiIsolate(formatNumber(h.sharesOwned))} وات
-                    </span>{' '}
-                    <span className="tabular-nums">({bidiIsolate(formatPercent(h.ownershipPercent))} پروژه)</span>
-                  </span>
-                  <div className="flex-1 flex items-center gap-2 min-w-0">
-                    <div className="flex-1 h-2 rounded-pill bg-hover overflow-hidden">
-                      <div
-                        className="h-full rounded-pill bg-blue-base transition-[width] duration-500"
-                        style={{ width: `${weight}%` }}
-                      />
-                    </div>
-                    <span className="text-[11px] text-text-muted tabular-nums shrink-0 w-20 text-end">
-                      {bidiIsolate(formatPercent(weight))} سبد
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )
-          })}
+          {totalPages > 1 && (
+            <div className="flex justify-center pt-1">
+              <Pagination page={currentPage} totalPages={totalPages} onPageChange={setPage} />
+            </div>
+          )}
         </div>
 
-        {totalPages > 1 && (
-          <div className="flex justify-center pt-3">
-            <Pagination page={currentPage} totalPages={totalPages} onPageChange={setPage} />
+        {/* Details — left (second DOM), 1/3 */}
+        {selected && (
+          <div className="lg:col-span-1 p-4 border-t border-border lg:border-t-0 lg:border-s bg-surface-2/40">
+            <DetailsPanel holding={selected} />
           </div>
         )}
-        </>
-        )
-      })()}
+      </div>
     </Card>
+  )
+}
+
+/* ── Details panel for the selected holding (fields NOT shown in the table) ── */
+function DetailsPanel({ holding }: { holding: Holding }) {
+  const { data: project } = useProject(holding.projectId)
+  const ownedKw = holding.sharesOwned / 1000
+
+  return (
+    <div className="flex flex-col gap-4 h-full">
+      <h2 className="text-[15px] font-semibold text-text">جزئیات دارایی</h2>
+
+      <div className="relative h-32 rounded-card overflow-hidden bg-surface-2">
+        <Image
+          src={project?.images?.[0] ?? '/Images/projects/project-1.jpg'}
+          alt={holding.projectName}
+          fill
+          sizes="(max-width: 1024px) 100vw, 30vw"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/65 to-transparent" />
+        <div className="absolute bottom-2 start-3 end-3 text-white">
+          <p className="text-[14px] font-bold leading-tight line-clamp-1 drop-shadow">
+            {holding.projectName}
+          </p>
+          <div className="flex items-center gap-1 text-[11px] text-white/90">
+            <MapPin size={11} className="shrink-0" />
+            <span className="truncate">{holding.projectLocation}</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <Detail label="سهم شما (کیلو وات)" value={bidiIsolate(formatNumber(ownedKw, 1))} />
+        <Detail label="درصد مالکیت" value={bidiIsolate(formatPercent(holding.ownershipPercent))} />
+        <Detail label="میانگین قیمت خرید" value={formatToman(holding.purchasePrice)} />
+        <Detail label="سرمایه‌گذاری اولیه" value={formatToman(holding.totalInvested)} />
+      </div>
+
+      <div className="flex gap-2 mt-auto pt-1">
+        <NavButton href={`/sell/${holding.projectId}`} variant="destructive" fullWidth className="flex-1">
+          فروش
+        </NavButton>
+        <NavButton href={`/project/${holding.projectId}`} variant="secondary" fullWidth className="flex-1">
+          جزئیات
+        </NavButton>
+      </div>
+    </div>
+  )
+}
+
+function Detail({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-col gap-0.5">
+      <span className="text-[11px] text-text-muted">{label}</span>
+      <span className="text-[13px] font-semibold text-text tabular-nums">{value}</span>
+    </div>
   )
 }

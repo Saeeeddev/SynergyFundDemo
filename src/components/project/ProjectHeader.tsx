@@ -5,12 +5,13 @@
 // [M §6.7] Phone: stacked, 16:9 image, stats 2×2
 
 import Image from 'next/image'
-import { MapPin } from 'lucide-react'
+import { MapPin, CalendarClock } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { ProgressBar } from '@/components/ui/ProgressBar'
 import { formatToman } from '@/lib/utils/currency'
 import { formatNumber, formatPercent } from '@/lib/utils/numbers'
+import { formatJalali } from '@/lib/utils/jalali'
 import type { Project } from '@/types/domain'
 
 interface ProjectHeaderProps {
@@ -28,11 +29,12 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
 
   return (
     <Card className="flex flex-col gap-5 p-5">
-      {/* Top section: name+location on right, image on left [F §11 R1, RTL] */}
-      <div className="flex flex-col-reverse gap-4 lg:flex-row lg:items-start lg:gap-6">
+      {/* Top section: image on top (full width), name/location below — fits the
+          narrower 40% column and gives a bigger image [F §11 R1] */}
+      <div className="flex flex-col-reverse gap-4">
 
-        {/* Image — phone: full-width 16:9; desktop: fixed width [M §6.7] */}
-        <div className="relative w-full aspect-video rounded-md overflow-hidden shrink-0 lg:w-72 lg:aspect-video">
+        {/* Image — full-width 16:9 */}
+        <div className="relative w-full aspect-video rounded-md overflow-hidden shrink-0">
           {project.images[0] ? (
             <Image
               src={project.images[0]}
@@ -51,7 +53,7 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
           {/* Gold energy badge — start-top corner [D §11] */}
           <div className="absolute top-2 start-2">
             <Badge role="energy">
-              {formatNumber(project.totalCapacityWatts / 1000, 0)} کیلووات
+              {formatNumber(project.totalCapacityWatts / 1_000_000, 1)} مگاوات
             </Badge>
           </div>
 
@@ -65,9 +67,19 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
         <div className="flex flex-col gap-3 flex-1">
           <h1 className="text-[22px] font-bold text-text leading-snug">{project.name}</h1>
 
-          <div className="flex items-center gap-1.5 text-text-muted">
-            <MapPin size={16} className="shrink-0" />
-            <span className="text-[14px]">{project.location}</span>
+          <div className="flex flex-col gap-1.5">
+            <div className="flex items-center gap-1.5 text-text-muted">
+              <MapPin size={16} className="shrink-0" />
+              <span className="text-[14px]">{project.location}</span>
+            </div>
+            {/* تاریخ شروع بهره‌برداری — below the city */}
+            <div className="flex items-center gap-1.5 text-text-muted">
+              <CalendarClock size={16} className="shrink-0" />
+              <span className="text-[13px]">
+                شروع بهره‌برداری:{' '}
+                <span className="tabular-nums text-text-2">{formatJalali(project.operationStartDate)}</span>
+              </span>
+            </div>
           </div>
 
           {project.description && (
@@ -77,11 +89,11 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
       </div>
 
       {/* 4 stat items in a row — phone: 2x2 [F §11 R1, M §6.7] */}
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4 border-t border-border pt-5">
+      <div className="grid grid-cols-2 gap-3 lg:gap-4 border-t border-border pt-5">
 
         {/* Target Annual Yield */}
         <div className="flex flex-col gap-1">
-          <span className="text-[12px] font-medium text-text-muted">بازده سالانه هدف</span>
+          <span className="text-[12px] font-medium text-text-muted">پیش‌بینی بازده سالانه</span>
           <span className="text-[18px] font-bold text-text tabular-nums">
             {formatPercent(project.targetYield)}
           </span>

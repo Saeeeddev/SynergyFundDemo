@@ -83,12 +83,12 @@ function computeForecast(
 
 interface RoiForecastSectionProps {
   project: Project
-  /** Raw digit string of the invested amount (shared with the calculator) */
-  amount: string
+  /** Quantity in kilowatts (shared with the calculator); 0 → uses min investment */
+  kw: string
 }
 
-export function RoiForecastSection({ project, amount }: RoiForecastSectionProps) {
-  const investedAmount = parseFloat(onlyDigits(amount)) || 0
+export function RoiForecastSection({ project, kw }: RoiForecastSectionProps) {
+  const investedAmount = (parseInt(onlyDigits(kw), 10) || 0) * project.sharePrice * 1000
 
   const { result, yearlyData } = useMemo(
     () => computeForecast(project, HORIZON, SCENARIO, investedAmount),
@@ -124,20 +124,20 @@ export function RoiForecastSection({ project, amount }: RoiForecastSectionProps)
       {/* Assumptions & methodology — moved up, above the charts [F §11] */}
       <AssumptionsPanel assumptions={DEFAULT_ASSUMPTIONS} />
 
-      {/* Two charts side by side (smaller) — stack on phone [M §6.7] */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-5 items-start">
+      {/* Charts — each on its own full-width row */}
+      <div className="flex flex-col gap-4">
         <Card className="p-4">
           <h3 className="text-[14px] font-semibold text-text mb-4">بازده تجمیعی در طول زمان</h3>
           <CumulativeRoiChart
             yearlyData={yearlyData}
             investedAmount={investedAmount || project.minInvestment}
-            height={220}
+            height={300}
           />
         </Card>
 
         <Card className="p-4">
           <h3 className="text-[14px] font-semibold text-text mb-4">درآمد سالانه پیش‌بینی‌شده</h3>
-          <YearlyIncomeChart yearlyData={yearlyData} height={220} />
+          <YearlyIncomeChart yearlyData={yearlyData} height={300} />
         </Card>
       </div>
     </div>

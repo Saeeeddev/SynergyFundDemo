@@ -29,6 +29,8 @@ export interface AreaChartProps {
   xFormatter?: (val: number) => string
   /** Tooltip value formatter */
   tooltipFormatter?: (val: number) => string
+  /** RTL time axis (newest on the left). Set false for a left→right timeline. */
+  reversed?: boolean
   isLoading?: boolean
   isError?: boolean
   onRetry?: () => void
@@ -41,6 +43,7 @@ export function AreaChart({
   yFormatter,
   xFormatter,
   tooltipFormatter,
+  reversed = true,
   isLoading,
   isError,
   onRetry,
@@ -116,9 +119,9 @@ export function AreaChart({
     legend: { enabled: false },
     accessibility: { enabled: false },
 
-    // RTL: newest data on the left, oldest on the right [D §6.2]
+    // Time axis direction — RTL (newest left) by default, or left→right when reversed=false
     xAxis: {
-      reversed: true,
+      reversed,
       type: 'datetime',
       lineColor: 'transparent',
       tickLength: 0,

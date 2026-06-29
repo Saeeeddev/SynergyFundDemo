@@ -18,6 +18,7 @@ import {
   ChevronUp,
   TrendingUp,
   Coins,
+  Headset,
 } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { NavPendingReporter } from './NavProgress'
@@ -33,6 +34,7 @@ export const NAV_ITEMS = [
   { href: '/portfolio',   label: 'سبد دارایی',                 icon: Briefcase       },
   { href: '/income',      label: 'درآمدها و پرداخت‌ها',        icon: Banknote        },
   { href: '/reports',     label: 'گزارش‌ها',                   icon: FileText        },
+  { href: '/support',     label: 'پشتیبانی',                   icon: Headset         },
   { href: '/settings',    label: 'تنظیمات',                    icon: Settings        },
 ]
 

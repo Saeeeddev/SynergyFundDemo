@@ -40,7 +40,7 @@ export function IncomeTimelineChart({
           <ErrorState scope="inline" onRetry={onRetry} />
         </div>
       ) : (
-        <MonthlyBarChart data={data} height={240} valueFormatter={formatTomanCompact} barSize="fat" />
+        <MonthlyBarChart data={data} height={240} valueFormatter={formatTomanCompact} barSize="fat" rotateLabels />
       )}
     </Card>
   )

@@ -1,15 +1,13 @@
 'use client'
 
-// [F §2 R3 right] "ارزش کل سرمایه‌گذاری" — asas SolarResource-style monthly bar
-// chart showing ALL dates (no range filter, no hidden labels).
+// [F §2 R3] "ارزش کل سرمایه‌گذاری" — ascending area/line chart (green line over a
+// soft gradient fill), matching the reference "Total Invested Value" design.
 
-import { MonthlyBarChart, type MonthlyBarDatum } from '@/components/charts/MonthlyBarChart'
+import { AreaChart } from '@/components/charts/AreaChart'
 import { Card } from '@/components/ui/Card'
 import { SectionTitle } from '@/components/ui/SectionTitle'
-import { formatTomanCompact } from '@/lib/utils/currency'
+import { formatToman, formatTomanCompact } from '@/lib/utils/currency'
 import { formatJalaliMonth } from '@/lib/utils/jalali'
-import { Skeleton } from '@/components/ui/Skeleton'
-import { ErrorState } from '@/components/ui/ErrorState'
 import type { PerformanceSeries } from '@/lib/schemas/portfolio'
 
 interface TotalInvestedChartProps {
@@ -20,24 +18,26 @@ interface TotalInvestedChartProps {
 }
 
 export function TotalInvestedChart({ series, isLoading, isError, onRetry }: TotalInvestedChartProps) {
-  const data: MonthlyBarDatum[] = series.map((p) => ({
-    label: formatJalaliMonth(p.date),
-    value: p.value,
-  }))
+  // [epoch_ms, value] pairs sorted ascending (oldest → newest)
+  const data: [number, number][] = series
+    .map((p) => [Date.parse(p.date), p.value] as [number, number])
+    .sort((a, b) => a[0] - b[0])
 
   return (
     <Card className="flex flex-col gap-5 h-full">
       <SectionTitle title="ارزش کل سرمایه‌گذاری" subtitle="روند ماهانه ارزش سرمایه‌گذاری شما" />
 
-      {isLoading ? (
-        <Skeleton className="h-[260px] w-full rounded-card" />
-      ) : isError ? (
-        <div className="flex items-center justify-center h-[260px]">
-          <ErrorState scope="inline" onRetry={onRetry} />
-        </div>
-      ) : (
-        <MonthlyBarChart data={data} height={240} valueFormatter={formatTomanCompact} rotateLabels />
-      )}
+      <AreaChart
+        data={data}
+        height={280}
+        reversed={false}
+        yFormatter={formatTomanCompact}
+        xFormatter={(ms) => formatJalaliMonth(new Date(ms).toISOString())}
+        tooltipFormatter={formatToman}
+        isLoading={isLoading}
+        isError={isError}
+        onRetry={onRetry}
+      />
     </Card>
   )
 }

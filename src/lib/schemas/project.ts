@@ -15,6 +15,8 @@ export const ProjectSchema = z.object({
   totalCapacityWatts: z.number(),
   description: z.string(),
   createdAt: z.string(),
+  operationStartDate: z.string(),
+  progressPercent: z.number().min(0).max(100).optional(),
 });
 
 export type Project = z.infer<typeof ProjectSchema>;

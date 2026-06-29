@@ -8,6 +8,12 @@ import { Checkbox, CheckboxLink } from '@/components/ui/Input'
 import { formatToman } from '@/lib/utils/currency'
 import { formatNumber, bidiIsolate } from '@/lib/utils/numbers'
 import { cn } from '@/lib/utils/cn'
+import type { FundingSource } from './FundingSourceBox'
+
+const FUNDING_OPTIONS: { value: FundingSource; label: string }[] = [
+  { value: 'platform', label: 'موجودی پلتفرم' },
+  { value: 'bank', label: 'انتقال بانکی' },
+]
 
 // [F §10 Step1 Left] Live investment review + agreement checkboxes
 // Desktop: tall card (left side of the grid)
@@ -20,6 +26,10 @@ interface InvestmentReviewBoxProps {
   annualIncome: number
   monthlyPayout: number
   investmentAmount: number
+  fee: number
+  total: number
+  fundingSource: FundingSource
+  onFundingSourceChange: (v: FundingSource) => void
   rules1: boolean
   rules2: boolean
   onRules1Change: (v: boolean) => void
@@ -39,6 +49,10 @@ export function InvestmentReviewBox({
   annualIncome,
   monthlyPayout,
   investmentAmount,
+  fee,
+  total,
+  fundingSource,
+  onFundingSourceChange,
   rules1,
   rules2,
   onRules1Change,
@@ -49,11 +63,39 @@ export function InvestmentReviewBox({
   const [sheetOpen, setSheetOpen] = useState(false)
 
   const summaryItems: SummaryItem[] = [
-    { label: 'تعداد سهام',    value: `${bidiIsolate(formatNumber(shares))} وات` },
+    { label: 'مبلغ سرمایه‌گذاری', value: formatToman(investmentAmount) },
+    { label: 'تعداد سهام',    value: `${bidiIsolate(formatNumber(shares / 1000, 1))} کیلو وات` },
     { label: 'درصد مالکیت',   value: `${bidiIsolate(formatNumber(ownershipPct, 4))}٪` },
     { label: 'درآمد سالانه',  value: formatToman(annualIncome) },
     { label: 'پرداخت ماهانه', value: formatToman(monthlyPayout) },
+    { label: 'کارمزد',        value: formatToman(fee) },
+    { label: 'مجموع پرداختی', value: formatToman(total) },
   ]
+
+  // Funding source — two buttons only, shown above the agreement checkboxes.
+  const fundingToggle = (
+    <div className="flex flex-col gap-2">
+      <span className="text-[13px] font-medium text-text-muted">منبع تأمین مالی</span>
+      <div className="grid grid-cols-2 gap-2">
+        {FUNDING_OPTIONS.map((opt) => (
+          <button
+            key={opt.value}
+            type="button"
+            onClick={() => onFundingSourceChange(opt.value)}
+            aria-pressed={fundingSource === opt.value}
+            className={cn(
+              'min-h-[44px] rounded-md border text-[13px] font-medium px-2 py-2 transition-colors',
+              fundingSource === opt.value
+                ? 'bg-green-tint border-green-base text-green-deep'
+                : 'bg-surface border-border text-text-muted hover:bg-hover',
+            )}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
 
   const checkboxes = (
     <div className="flex flex-col gap-3">
@@ -88,14 +130,17 @@ export function InvestmentReviewBox({
       <Card className="hidden lg:flex flex-col gap-5 p-5">
         <h3 className="text-[15px] font-semibold text-text">خلاصه سرمایه‌گذاری</h3>
 
-        {/* Live computed values */}
-        <div className="flex flex-col gap-4">
+        {/* Live computed values — two columns to keep the card short */}
+        <div className="grid grid-cols-2 gap-x-4 gap-y-3">
           {summaryItems.map(item => (
             <SummaryRow key={item.label} label={item.label} value={item.value} />
           ))}
         </div>
 
         <div className="h-px bg-border" />
+
+        {/* Funding source (two buttons) above the agreement checkboxes */}
+        {fundingToggle}
 
         {/* Checkboxes */}
         {checkboxes}
@@ -128,15 +173,16 @@ export function InvestmentReviewBox({
           aria-label="نمایش خلاصه کامل سرمایه‌گذاری"
         >
           <div className="flex gap-5 text-start">
-            <MiniStat label="سهام"   value={`${bidiIsolate(formatNumber(shares))} وات`} />
+            <MiniStat label="سهام"   value={`${bidiIsolate(formatNumber(shares / 1000, 1))} ک.و`} />
             <MiniStat label="ماهانه" value={formatToman(monthlyPayout)} />
             <MiniStat label="مجموع"  value={formatToman(investmentAmount)} />
           </div>
           <ChevronUp size={16} className="text-text-muted shrink-0" aria-hidden="true" />
         </button>
 
-        {/* Checkboxes + CTA */}
+        {/* Funding + Checkboxes + CTA */}
         <div className="flex flex-col gap-2.5 px-4 pt-1 pb-2">
+          {fundingToggle}
           {/* Compact mobile checkboxes */}
           <Checkbox
             checked={rules1}
@@ -192,7 +238,7 @@ export function InvestmentReviewBox({
               </button>
             </div>
 
-            <div className="flex flex-col gap-3">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-3">
               {summaryItems.map(item => (
                 <SummaryRow key={item.label} label={item.label} value={item.value} />
               ))}
@@ -210,8 +256,8 @@ export function InvestmentReviewBox({
 
 function SummaryRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between items-center gap-2">
-      <span className="text-[13px] text-text-muted">{label}</span>
+    <div className="flex flex-col gap-0.5">
+      <span className="text-[12px] text-text-muted">{label}</span>
       <span className="text-[14px] font-semibold text-text tabular-nums">{value}</span>
     </div>
   )

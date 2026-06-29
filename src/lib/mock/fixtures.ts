@@ -8,10 +8,13 @@ import type { Payout, PayoutMethod, IncomeSummary } from "@/lib/schemas/payout";
 import type { Report } from "@/lib/schemas/report";
 import type { User, Notification } from "@/lib/schemas/user";
 import type { CashConfig } from "@/lib/schemas/cash";
+import type { Ticket } from "@/lib/schemas/support";
 import type { DashboardSummary } from "@/types/domain";
 
 // ─── Projects (10 items → 2 pages of 8 / 5) ───────────────────────────────────
 
+// Capacities are now multi-megawatt. sharePrice is Toman per watt; minInvestment
+// equals the price of 1 kW (the minimum share), so the cheapest entry is ۸۰ میلیون تومان.
 export const MOCK_PROJECTS: Project[] = [
   {
     id: "proj-1",
@@ -20,12 +23,13 @@ export const MOCK_PROJECTS: Project[] = [
     images: ["/Images/projects/project-1.jpg"],
     status: "active",
     targetYield: 18.5,
-    minInvestment: 5_000_000,
-    sharePrice: 10_000,
+    minInvestment: 100_000_000,
+    sharePrice: 100_000,
     soldPercent: 72,
-    totalCapacityWatts: 500_000,
-    description: "نیروگاه خورشیدی ۵۰۰ کیلوواتی در شمال اصفهان",
+    totalCapacityWatts: 2_000_000,
+    description: "نیروگاه خورشیدی ۲ مگاواتی در شمال اصفهان",
     createdAt: "2024-03-01T00:00:00Z",
+    operationStartDate: "2025-09-01T00:00:00Z",
   },
   {
     id: "proj-2",
@@ -34,12 +38,14 @@ export const MOCK_PROJECTS: Project[] = [
     images: ["/Images/projects/project-2.jpg"],
     status: "funding",
     targetYield: 21.0,
-    minInvestment: 3_000_000,
-    sharePrice: 8_500,
+    minInvestment: 95_000_000,
+    sharePrice: 95_000,
     soldPercent: 34,
-    totalCapacityWatts: 300_000,
-    description: "نیروگاه ۳۰۰ کیلوواتی در جنوب شیراز با بازده بالا",
+    totalCapacityWatts: 1_500_000,
+    description: "نیروگاه ۱.۵ مگاواتی در جنوب شیراز با بازده بالا",
     createdAt: "2024-04-15T00:00:00Z",
+    operationStartDate: "2026-03-01T00:00:00Z",
+    progressPercent: 45,
   },
   {
     id: "proj-3",
@@ -48,12 +54,13 @@ export const MOCK_PROJECTS: Project[] = [
     images: ["/Images/projects/project-1.jpg"],
     status: "active",
     targetYield: 22.3,
-    minInvestment: 10_000_000,
-    sharePrice: 12_000,
+    minInvestment: 120_000_000,
+    sharePrice: 120_000,
     soldPercent: 89,
-    totalCapacityWatts: 1_000_000,
-    description: "بزرگ‌ترین نیروگاه خورشیدی بخش خصوصی در استان کرمان",
+    totalCapacityWatts: 5_000_000,
+    description: "بزرگ‌ترین نیروگاه خورشیدی بخش خصوصی استان کرمان با ظرفیت ۵ مگاوات",
     createdAt: "2023-11-20T00:00:00Z",
+    operationStartDate: "2025-01-01T00:00:00Z",
   },
   {
     id: "proj-4",
@@ -62,12 +69,14 @@ export const MOCK_PROJECTS: Project[] = [
     images: ["/Images/projects/project-2.jpg"],
     status: "funding",
     targetYield: 16.8,
-    minInvestment: 2_000_000,
-    sharePrice: 7_000,
+    minInvestment: 85_000_000,
+    sharePrice: 85_000,
     soldPercent: 12,
-    totalCapacityWatts: 200_000,
-    description: "نیروگاه شهری ۲۰۰ کیلوواتی در حومه تهران",
+    totalCapacityWatts: 1_000_000,
+    description: "نیروگاه شهری ۱ مگاواتی در حومه تهران",
     createdAt: "2024-05-10T00:00:00Z",
+    operationStartDate: "2026-06-01T00:00:00Z",
+    progressPercent: 20,
   },
   {
     id: "proj-5",
@@ -76,12 +85,13 @@ export const MOCK_PROJECTS: Project[] = [
     images: ["/Images/projects/project-1.jpg"],
     status: "active",
     targetYield: 24.1,
-    minInvestment: 5_000_000,
-    sharePrice: 11_000,
+    minInvestment: 110_000_000,
+    sharePrice: 110_000,
     soldPercent: 95,
-    totalCapacityWatts: 750_000,
-    description: "نیروگاه ۷۵۰ کیلوواتی در استان آفتابی یزد",
+    totalCapacityWatts: 3_000_000,
+    description: "نیروگاه ۳ مگاواتی در استان آفتابی یزد",
     createdAt: "2023-08-01T00:00:00Z",
+    operationStartDate: "2024-12-01T00:00:00Z",
   },
   {
     id: "proj-6",
@@ -90,12 +100,13 @@ export const MOCK_PROJECTS: Project[] = [
     images: ["/Images/projects/project-2.jpg"],
     status: "active",
     targetYield: 19.7,
-    minInvestment: 4_000_000,
-    sharePrice: 9_500,
+    minInvestment: 90_000_000,
+    sharePrice: 90_000,
     soldPercent: 61,
-    totalCapacityWatts: 400_000,
-    description: "نیروگاه ساحلی ۴۰۰ کیلوواتی در استان بوشهر",
+    totalCapacityWatts: 1_800_000,
+    description: "نیروگاه ساحلی ۱.۸ مگاواتی در استان بوشهر",
     createdAt: "2024-01-15T00:00:00Z",
+    operationStartDate: "2025-05-01T00:00:00Z",
   },
   {
     id: "proj-7",
@@ -104,12 +115,14 @@ export const MOCK_PROJECTS: Project[] = [
     images: ["/Images/projects/project-1.jpg"],
     status: "funding",
     targetYield: 17.5,
-    minInvestment: 3_500_000,
-    sharePrice: 8_000,
+    minInvestment: 80_000_000,
+    sharePrice: 80_000,
     soldPercent: 28,
-    totalCapacityWatts: 350_000,
-    description: "نیروگاه ۳۵۰ کیلوواتی در حومه مشهد مقدس",
+    totalCapacityWatts: 1_200_000,
+    description: "نیروگاه ۱.۲ مگاواتی در حومه مشهد مقدس",
     createdAt: "2024-06-01T00:00:00Z",
+    operationStartDate: "2026-08-01T00:00:00Z",
+    progressPercent: 35,
   },
   {
     id: "proj-8",
@@ -118,12 +131,13 @@ export const MOCK_PROJECTS: Project[] = [
     images: ["/Images/projects/project-2.jpg"],
     status: "active",
     targetYield: 20.2,
-    minInvestment: 6_000_000,
-    sharePrice: 10_500,
+    minInvestment: 105_000_000,
+    sharePrice: 105_000,
     soldPercent: 53,
-    totalCapacityWatts: 600_000,
-    description: "نیروگاه کوهستانی ۶۰۰ کیلوواتی در لرستان",
+    totalCapacityWatts: 2_500_000,
+    description: "نیروگاه کوهستانی ۲.۵ مگاواتی در لرستان",
     createdAt: "2024-02-20T00:00:00Z",
+    operationStartDate: "2025-03-01T00:00:00Z",
   },
   {
     id: "proj-9",
@@ -132,12 +146,14 @@ export const MOCK_PROJECTS: Project[] = [
     images: ["/Images/projects/project-1.jpg"],
     status: "funding",
     targetYield: 14.5,
-    minInvestment: 2_500_000,
-    sharePrice: 7_500,
+    minInvestment: 80_000_000,
+    sharePrice: 80_000,
     soldPercent: 7,
-    totalCapacityWatts: 150_000,
-    description: "نیروگاه ۱۵۰ کیلوواتی با تکنولوژی پنل دو رو در گیلان",
+    totalCapacityWatts: 1_000_000,
+    description: "نیروگاه ۱ مگاواتی با تکنولوژی پنل دو رو در گیلان",
     createdAt: "2024-06-10T00:00:00Z",
+    operationStartDate: "2026-09-01T00:00:00Z",
+    progressPercent: 15,
   },
   {
     id: "proj-10",
@@ -146,26 +162,32 @@ export const MOCK_PROJECTS: Project[] = [
     images: ["/Images/projects/project-2.jpg"],
     status: "closed",
     targetYield: 23.0,
-    minInvestment: 5_000_000,
-    sharePrice: 13_000,
+    minInvestment: 130_000_000,
+    sharePrice: 130_000,
     soldPercent: 100,
-    totalCapacityWatts: 800_000,
-    description: "نیروگاه تمام‌فروخته ۸۰۰ کیلوواتی در بیابان‌های سمنان",
+    totalCapacityWatts: 4_000_000,
+    description: "نیروگاه تمام‌فروخته ۴ مگاواتی در بیابان‌های سمنان",
     createdAt: "2023-06-01T00:00:00Z",
+    operationStartDate: "2024-06-01T00:00:00Z",
   },
 ];
 
 // ─── Dashboard summary ─────────────────────────────────────────────────────────
 
-function makeSeries(months: number, base: number): PerformanceSeries[] {
+// Strictly ascending series (oldest → newest): value grows from ~40% to `end`,
+// with a tiny wobble that never breaks the upward trend.
+function makeSeries(months: number, end: number): PerformanceSeries[] {
   const series: PerformanceSeries[] = [];
   const now = new Date("2025-06-01");
+  const start = Math.round(end * 0.4);
   for (let i = months - 1; i >= 0; i--) {
     const d = new Date(now);
     d.setMonth(d.getMonth() - i);
+    const t = months > 1 ? (months - 1 - i) / (months - 1) : 1; // 0 oldest → 1 newest
+    const wobble = Math.round(Math.sin(i) * end * 0.01);
     series.push({
       date: d.toISOString().slice(0, 10),
-      value: base + Math.round((Math.random() - 0.3) * base * 0.15 * (months - i)),
+      value: Math.round(start + (end - start) * t) + wobble,
     });
   }
   return series;
@@ -179,10 +201,10 @@ export const MOCK_DASHBOARD: DashboardSummary = {
   energyProducedKwh: 142_600,
   investedSeries: makeSeries(12, 185_000_000),
   allocation: [
-    { name: "اصفهان ۱", value: 55_000_000 },
-    { name: "یزد", value: 72_000_000 },
-    { name: "بوشهر", value: 38_000_000 },
-    { name: "زاگرس", value: 20_000_000 },
+    { name: "اصفهان ۱", value: 55_000_000, watts: 5_000 },
+    { name: "یزد", value: 72_000_000, watts: 6_000 },
+    { name: "بوشهر", value: 38_000_000, watts: 4_000 },
+    { name: "زاگرس", value: 20_000_000, watts: 2_000 },
   ],
 };
 
@@ -522,6 +544,98 @@ export const MOCK_CASH_CONFIG: CashConfig = {
   dailyWithdrawCap: 332_739_000,
 };
 
+// ─── Support tickets (conversations) ──────────────────────────────────────────
+
+export const MOCK_TICKETS: Ticket[] = [
+  {
+    id: "tk-3",
+    category: "financial",
+    subject: "تأخیر در واریز سود ماهانه",
+    status: "answered",
+    createdAt: "2026-06-27T10:15:00Z",
+    messages: [
+      {
+        id: "tk-3-m1",
+        sender: "user",
+        text: "سود این ماه پروژه یزد هنوز به حساب من واریز نشده است. لطفاً بررسی کنید.",
+        date: "2026-06-27T10:15:00Z",
+      },
+      {
+        id: "tk-3-m2",
+        sender: "admin",
+        text: "با سلام، واریز سود پروژه یزد در حال پردازش است و تا ۴۸ ساعت آینده به حساب شما واریز می‌شود.",
+        date: "2026-06-27T12:40:00Z",
+      },
+      {
+        id: "tk-3-m3",
+        sender: "user",
+        text: "ممنون از پاسخ‌تان. آیا امکان دارد زمان دقیق‌تری اعلام کنید؟",
+        date: "2026-06-27T13:05:00Z",
+      },
+      {
+        id: "tk-3-m4",
+        sender: "admin",
+        text: "بله، طبق پیگیری انجام‌شده واریز فردا صبح انجام خواهد شد.",
+        date: "2026-06-27T13:30:00Z",
+      },
+      {
+        id: "tk-3-m5",
+        sender: "user",
+        text: "عالی است. اگر تا فردا ظهر واریز نشد دوباره اطلاع می‌دهم.",
+        date: "2026-06-27T13:45:00Z",
+      },
+      {
+        id: "tk-3-m6",
+        sender: "admin",
+        text: "حتماً. در خدمت شما هستیم. تیکت تا زمان واریز باز نگه داشته می‌شود.",
+        date: "2026-06-27T14:00:00Z",
+      },
+      {
+        id: "tk-3-m7",
+        sender: "user",
+        text: "سپاسگزارم از پیگیری شما.",
+        date: "2026-06-27T14:10:00Z",
+      },
+    ],
+  },
+  {
+    id: "tk-2",
+    category: "technical",
+    subject: "خطا در بارگذاری نمودار سبد دارایی",
+    status: "open",
+    createdAt: "2026-06-25T16:40:00Z",
+    messages: [
+      {
+        id: "tk-2-m1",
+        sender: "user",
+        text: "در صفحه دارایی‌ها نمودار عملکرد گاهی بارگذاری نمی‌شود و باید صفحه را رفرش کنم.",
+        date: "2026-06-25T16:40:00Z",
+      },
+    ],
+  },
+  {
+    id: "tk-1",
+    category: "account",
+    subject: "تغییر شماره موبایل حساب",
+    status: "closed",
+    createdAt: "2026-06-21T09:05:00Z",
+    messages: [
+      {
+        id: "tk-1-m1",
+        sender: "user",
+        text: "می‌خواهم شماره موبایل ثبت‌شده در حساب کاربری‌ام را تغییر دهم.",
+        date: "2026-06-21T09:05:00Z",
+      },
+      {
+        id: "tk-1-m2",
+        sender: "admin",
+        text: "درخواست شما ثبت شد. شماره جدید با موفقیت جایگزین شد. در صورت نیاز دوباره در ارتباط باشید.",
+        date: "2026-06-21T11:20:00Z",
+      },
+    ],
+  },
+];
+
 // ─── Payouts (12 items → 2 pages of 8 / 5) ────────────────────────────────────
 
 export const MOCK_PAYOUTS: Payout[] = Array.from({ length: 12 }, (_, i) => ({
@@ -554,6 +668,12 @@ export const MOCK_INCOME_SUMMARY: IncomeSummary = {
   thisMonthIncome: 7_620_000,
   cashBalance: 42_500_000,
   monthlyBars: [
+    { month: "۱۴۰۳/۰۴", amount: 4_900_000 },
+    { month: "۱۴۰۳/۰۵", amount: 5_200_000 },
+    { month: "۱۴۰۳/۰۶", amount: 5_050_000 },
+    { month: "۱۴۰۳/۰۷", amount: 5_600_000 },
+    { month: "۱۴۰۳/۰۸", amount: 5_900_000 },
+    { month: "۱۴۰۳/۰۹", amount: 5_750_000 },
     { month: "۱۴۰۳/۱۰", amount: 6_100_000 },
     { month: "۱۴۰۳/۱۱", amount: 5_800_000 },
     { month: "۱۴۰۳/۱۲", amount: 6_400_000 },

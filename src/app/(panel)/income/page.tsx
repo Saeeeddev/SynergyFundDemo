@@ -8,8 +8,8 @@ import { StatCard } from '@/components/ui/StatCard'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { IncomeTimelineChart } from '@/components/income/IncomeTimelineChart'
 import { PayoutHistoryTable } from '@/components/income/PayoutHistoryTable'
-import { PayoutMethodCard } from '@/components/income/PayoutMethodCard'
-import { useIncomeSummary, usePayoutMethod } from '@/lib/hooks/usePayouts'
+import { PaymentMethodsCard } from '@/components/dashboard/PaymentMethodsCard'
+import { useIncomeSummary } from '@/lib/hooks/usePayouts'
 import { formatToman } from '@/lib/utils/currency'
 
 export default function IncomePage() {
@@ -19,13 +19,6 @@ export default function IncomePage() {
     isError: summaryError,
     refetch: refetchSummary,
   } = useIncomeSummary()
-
-  const {
-    data: method,
-    isLoading: methodLoading,
-    isError: methodError,
-    refetch: refetchMethod,
-  } = usePayoutMethod()
 
   return (
     <div className="flex flex-col gap-4 p-3 lg:gap-5 lg:p-3">
@@ -74,18 +67,13 @@ export default function IncomePage() {
         onRetry={() => refetchSummary()}
       />
 
-      {/* Row 3 — Payout history (70%) + Payout method (30%) [F §5 R3] */}
+      {/* Row 3 — Payout history (70%) + Payment methods (30%) [F §5 R3] */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-10 lg:gap-4">
         <div className="lg:col-span-7">
           <PayoutHistoryTable />
         </div>
         <div className="lg:col-span-3">
-          <PayoutMethodCard
-            method={method}
-            isLoading={methodLoading}
-            isError={methodError}
-            onRetry={() => refetchMethod()}
-          />
+          <PaymentMethodsCard />
         </div>
       </div>
 

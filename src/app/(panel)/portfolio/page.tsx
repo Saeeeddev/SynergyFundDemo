@@ -46,7 +46,7 @@ export default function PortfolioPage() {
           role="positive"
         />
         <StatCard
-          label="کل سرمایه‌گذاری"
+          label="کل سرمایه‌گذاری اولیه"
           value={summaryLoading ? '…' : formatToman(summary?.totalInvested ?? 0)}
           icon={<TrendingUp size={20} />}
           role="info"
