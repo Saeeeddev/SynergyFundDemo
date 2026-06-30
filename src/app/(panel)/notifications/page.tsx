@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/Card'
 import { Empty } from '@/components/ui/Empty'
 import { NotificationItem } from '@/components/notifications/NotificationItem'
 import { NotificationSettingsPanel } from '@/components/notifications/NotificationSettingsPanel'
+import { BackButton } from '@/components/ui/BackButton'
 import { useNotifications, useMarkAllAsRead } from '@/lib/hooks/useNotifications'
 
 export default function NotificationsPage() {
@@ -18,6 +19,8 @@ export default function NotificationsPage() {
 
   return (
     <div className="flex flex-col gap-4 p-4 lg:gap-5 lg:p-5">
+
+      <BackButton href="/dashboard" label="بازگشت به داشبورد" />
 
       {/* Notification list */}
       <Card className="flex flex-col">

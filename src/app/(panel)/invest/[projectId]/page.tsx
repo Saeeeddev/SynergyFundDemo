@@ -154,15 +154,12 @@ export default function InvestPage({ params }: InvestPageProps) {
         // Desktop RTL grid: first child → RIGHT (3 boxes, 2fr), second child → LEFT (ReviewBox, 1fr)
         // Mobile: single column stack — SelectedAsset → Amount → FundingSource → sticky ReviewBox
         // Bottom padding on mobile so the sticky ReviewBox doesn't cover the last card [M §6.8]
-        <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[65fr_35fr] lg:gap-5 lg:items-start pb-[280px] lg:pb-0">
+        <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[65fr_35fr] lg:gap-5 lg:items-start pb-[112px] lg:pb-0">
 
-          {/* RIGHT side (65%) — large selected asset; sticky to cut scrolling */}
-          <div className="lg:sticky lg:top-3">
+          {/* RIGHT side (65%) — selected asset + amount picker right beneath it;
+              sticky so the input stays in view and the page doesn't scroll. */}
+          <div className="lg:sticky lg:top-3 flex flex-col gap-4">
             <SelectedAssetBox project={project} />
-          </div>
-
-          {/* LEFT side (35%) — تعداد سهام (kW) → خلاصه سرمایه‌گذاری (با منبع تأمین مالی) */}
-          <div className="flex flex-col gap-4">
             <InvestmentAmountBox
               project={project}
               kw={kw}
@@ -170,6 +167,10 @@ export default function InvestPage({ params }: InvestPageProps) {
               maxKw={maxKw}
               pricePerKw={pricePerKw}
             />
+          </div>
+
+          {/* LEFT side (35%) — خلاصه سرمایه‌گذاری (با منبع تأمین مالی + موافقت‌ها) */}
+          <div className="flex flex-col gap-4">
             <InvestmentReviewBox
               shares={shares}
               ownershipPct={ownershipPct}

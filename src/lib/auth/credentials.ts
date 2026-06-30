@@ -15,4 +15,3 @@ export function validateCredentials(
 ): boolean {
   return username === ADMIN_USERNAME && password === ADMIN_PASSWORD;
 }
-1

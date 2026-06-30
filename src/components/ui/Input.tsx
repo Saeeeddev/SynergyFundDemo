@@ -17,10 +17,12 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   helper?: string
   error?: string
   wrapperClassName?: string
+  /** Element rendered inside the field on the end side (left in RTL), e.g. a password toggle. */
+  endAdornment?: ReactNode
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
-  { label, helper, error, className, wrapperClassName, ...props },
+  { label, helper, error, className, wrapperClassName, endAdornment, ...props },
   ref,
 ) {
   const uid = useId()
@@ -38,30 +40,40 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         </label>
       )}
 
-      <input
-        ref={ref}
-        id={inputId}
-        aria-invalid={hasError || undefined}
-        aria-describedby={
-          error    ? `${inputId}-msg` :
-          helper   ? `${inputId}-msg` :
-          undefined
-        }
-        className={cn(
-          'w-full bg-surface border rounded-md',
-          'ps-4 pe-4',
-          // Mobile: 48px height, ≥16px font; desktop: 40px height, 14px font [M §7.5, M §10]
-          'h-12 text-[16px] md:h-10 md:text-[14px]',
-          'text-text placeholder:text-text-subtle',
-          'transition-colors duration-[120ms] ease-out motion-reduce:transition-none',
-          'focus:outline-none focus:ring-2',
-          hasError
-            ? 'border-red-base focus:ring-red-tint focus:border-red-base'
-            : 'border-border-strong focus:ring-green-tint focus:border-green-base',
-          className,
+      <div className="relative">
+        <input
+          ref={ref}
+          id={inputId}
+          aria-invalid={hasError || undefined}
+          aria-describedby={
+            error    ? `${inputId}-msg` :
+            helper   ? `${inputId}-msg` :
+            undefined
+          }
+          className={cn(
+            'w-full bg-surface border rounded-md',
+            'ps-4',
+            // Leave room for the trailing adornment when present
+            endAdornment ? 'pe-11' : 'pe-4',
+            // Mobile: 48px height, ≥16px font; desktop: 40px height, 14px font [M §7.5, M §10]
+            'h-12 text-[16px] md:h-10 md:text-[14px]',
+            'text-text placeholder:text-text-subtle',
+            'transition-colors duration-[120ms] ease-out motion-reduce:transition-none',
+            'focus:outline-none focus:ring-2',
+            hasError
+              ? 'border-red-base focus:ring-red-tint focus:border-red-base'
+              : 'border-border-strong focus:ring-green-tint focus:border-green-base',
+            className,
+          )}
+          {...props}
+        />
+
+        {endAdornment && (
+          <div className="absolute inset-y-0 end-0 flex items-center pe-2">
+            {endAdornment}
+          </div>
         )}
-        {...props}
-      />
+      </div>
 
       {(error || helper) && (
         <p
