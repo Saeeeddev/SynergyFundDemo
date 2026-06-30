@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.101.1",
+    "@vercel/analytics": "^2.0.1",
     "axios": "^1.18.1",
     "dayjs": "^1.11.21",
     "highcharts": "^13.0.0",

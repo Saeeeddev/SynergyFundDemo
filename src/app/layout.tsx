@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import Providers from "./providers";
 
@@ -30,6 +31,8 @@ export default function RootLayout({
           on <body> itself, not real mismatches in the tree. */}
       <body suppressHydrationWarning>
         <Providers>{children}</Providers>
+        {/* Vercel Web Analytics — page views & visitors (only sends on Vercel deploys) */}
+        <Analytics />
       </body>
     </html>
   );
