@@ -183,7 +183,7 @@ export function ProjectCard({ project, className }: ProjectCardProps) {
         {/* Footer action bar (asas) — NavButton shows a spinner during navigation */}
         <div className="-mx-4 -mb-4 mt-auto border-t border-border bg-surface-2 px-4 py-3 flex items-center gap-2">
           <NavButton
-            href={`/project/${project.id}`}
+            href={`/project-details/${project.id}`}
             variant="ghost"
             size="compact"
             iconEnd={<ChevronLeft size={16} />}

@@ -1,7 +1,7 @@
 // Mock fixtures — shaped to satisfy every Zod schema from T0.6.
 // Each entity list is large enough to exercise pagination.
 
-import type { Project } from "@/types/domain";
+import type { Project, ProjectDetails } from "@/types/domain";
 import type { Holding, PerformanceSeries, GeoDistribution, PortfolioSummary } from "@/lib/schemas/portfolio";
 import type { Activity, Investment } from "@/lib/schemas/investment";
 import type { Payout, PayoutMethod, IncomeSummary } from "@/lib/schemas/payout";
@@ -13,9 +13,42 @@ import type { DashboardSummary } from "@/types/domain";
 
 // ─── Projects (10 items → 2 pages of 8 / 5) ───────────────────────────────────
 
+// Default per-project detail content (project page tabs + ROI forecast inputs).
+// The mock attaches this to EVERY project so the project page reads all of its
+// content from the API — the backend will return a real per-project object with
+// exactly this shape. [F §11]
+const DEFAULT_PROJECT_DETAILS: ProjectDetails = {
+  distributionPeriod: "ماهانه",
+  legal: {
+    assetType: "توکن وات (ERC-20 — Polygon)",
+    documentType: "قرارداد مشارکت در سود",
+    contractPeriod: "۲۵ سال",
+    license: "ساتبا / وزارت نیرو",
+  },
+  reports: [
+    { title: "گزارش فنی پروژه", date: "۱۴۰۴/۰۳" },
+    { title: "صورت‌های مالی سالانه", date: "۱۴۰۴/۰۱" },
+    { title: "گزارش عملکرد تولید برق", date: "۱۴۰۳/۱۲" },
+  ],
+  risks: [
+    "تغییرات نرخ تعرفه برق",
+    "کاهش تدریجی راندمان پنل‌های خورشیدی",
+    "نوسانات بازار و تغییر قیمت وات",
+    "ریسک‌های عملیاتی و نگهداری",
+  ],
+  forecast: {
+    annualYieldPercent: 18,
+    degradationRatePercent: 0.5,
+    electricityTariff: 1_500,
+    operatingFeePercent: 2,
+    horizonYears: 25,
+    previousPaybackYears: 4,
+  },
+};
+
 // Capacities are now multi-megawatt. sharePrice is Toman per watt; minInvestment
 // equals the price of 1 kW (the minimum share), so the cheapest entry is ۸۰ میلیون تومان.
-export const MOCK_PROJECTS: Project[] = [
+const BASE_PROJECTS: Omit<Project, "details">[] = [
   {
     id: "proj-1",
     name: "نیروگاه خورشیدی اصفهان ۱",
@@ -51,7 +84,7 @@ export const MOCK_PROJECTS: Project[] = [
     id: "proj-3",
     name: "مجتمع انرژی کرمان",
     location: "کرمان",
-    images: ["/Images/projects/project-1.jpg"],
+    images: ["/Images/projects/image3.jpg"],
     status: "active",
     targetYield: 22.3,
     minInvestment: 120_000_000,
@@ -66,7 +99,7 @@ export const MOCK_PROJECTS: Project[] = [
     id: "proj-4",
     name: "سپهر انرژی تهران",
     location: "تهران",
-    images: ["/Images/projects/project-2.jpg"],
+    images: ["/Images/projects/image4.jpg"],
     status: "funding",
     targetYield: 16.8,
     minInvestment: 85_000_000,
@@ -82,7 +115,7 @@ export const MOCK_PROJECTS: Project[] = [
     id: "proj-5",
     name: "طلوع خورشید یزد",
     location: "یزد",
-    images: ["/Images/projects/project-1.jpg"],
+    images: ["/Images/projects/image3.jpg"],
     status: "active",
     targetYield: 24.1,
     minInvestment: 110_000_000,
@@ -128,7 +161,7 @@ export const MOCK_PROJECTS: Project[] = [
     id: "proj-8",
     name: "آفتاب زاگرس لرستان",
     location: "خرم‌آباد",
-    images: ["/Images/projects/project-2.jpg"],
+    images: ["/Images/projects/image4.jpg"],
     status: "active",
     targetYield: 20.2,
     minInvestment: 105_000_000,
@@ -171,6 +204,17 @@ export const MOCK_PROJECTS: Project[] = [
     operationStartDate: "2024-06-01T00:00:00Z",
   },
 ];
+
+// Attach per-project detail data. annualYieldPercent tracks each project's target
+// yield; everything else uses the shared default for the mock (admin sets it per
+// project once the Django backend is wired). [F §11]
+export const MOCK_PROJECTS: Project[] = BASE_PROJECTS.map((p) => ({
+  ...p,
+  details: {
+    ...DEFAULT_PROJECT_DETAILS,
+    forecast: { ...DEFAULT_PROJECT_DETAILS.forecast, annualYieldPercent: p.targetYield },
+  },
+}));
 
 // ─── Dashboard summary ─────────────────────────────────────────────────────────
 

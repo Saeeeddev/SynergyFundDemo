@@ -22,7 +22,7 @@ const PAGE_TITLES: Record<string, string> = {
   '/notifications':'اعلان‌ها',
   '/profile':      'پروفایل',
   '/verification': 'تأیید هویت',
-  '/project':      'جزئیات پروژه',
+  '/project-details': 'جزئیات پروژه',
   '/invest':       'سرمایه‌گذاری',
   '/sell':         'فروش',
 }

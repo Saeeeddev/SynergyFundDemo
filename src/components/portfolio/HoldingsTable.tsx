@@ -230,7 +230,7 @@ function DetailsPanel({ holding }: { holding: Holding }) {
         <NavButton href={`/sell/${holding.projectId}`} variant="destructive" fullWidth className="flex-1">
           فروش
         </NavButton>
-        <NavButton href={`/project/${holding.projectId}`} variant="secondary" fullWidth className="flex-1">
+        <NavButton href={`/project-details/${holding.projectId}`} variant="secondary" fullWidth className="flex-1">
           جزئیات
         </NavButton>
       </div>

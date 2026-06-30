@@ -66,7 +66,15 @@ export default function PortfolioPage() {
         />
       </div>
 
-      {/* Row 2 — Performance chart (70%) + Geo distribution (30%) [F §4 R2] */}
+      {/* Row 2 — Holdings [F §4 R3] — moved above the performance/geo charts */}
+      <HoldingsTable
+        holdings={holdings ?? []}
+        isLoading={holdingsLoading}
+        isError={holdingsError}
+        onRetry={() => refetchHoldings()}
+      />
+
+      {/* Row 3 — Performance chart (70%) + Geo distribution (30%) [F §4 R2] */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-10 lg:gap-4">
         <div className="lg:col-span-7">
           <PerformanceChart
@@ -85,14 +93,6 @@ export default function PortfolioPage() {
           />
         </div>
       </div>
-
-      {/* Row 3 — Holdings [F §4 R3] */}
-      <HoldingsTable
-        holdings={holdings ?? []}
-        isLoading={holdingsLoading}
-        isError={holdingsError}
-        onRetry={() => refetchHoldings()}
-      />
 
       {/* Row 4 — Order History [F §4 R4] — self-fetches with its own pagination */}
       <OrderHistoryTable />

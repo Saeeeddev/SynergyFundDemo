@@ -58,7 +58,7 @@ export function ProjectShowcaseCard() {
 
       {/* Big image fills the card; details overlaid at the bottom */}
       <div className="relative flex-1 min-h-[200px] rounded-card overflow-hidden">
-        <Link href={`/project/${current.projectId}`} className="absolute inset-0 group">
+        <Link href={`/project-details/${current.projectId}`} className="absolute inset-0 group">
           <Image
             src={project?.images?.[0] ?? '/Images/projects/project-1.jpg'}
             alt={current.projectName}

@@ -28,6 +28,39 @@ export interface Project {
   createdAt: string;         // ISO date string
   operationStartDate: string; // ISO date — تاریخ شروع بهره‌برداری
   progressPercent?: number;   // construction/funding progress 0–100 (mainly for "funding")
+  // Per-project detail content shown on the project page tabs + ROI forecast.
+  // Admin-editable per project (Django later); the UI reads it all from here. [F §11]
+  details: ProjectDetails;
+}
+
+// ─── Project details (FEATURES.md §11 — project page tabs + forecast) ───────────
+// Everything below is supplied per project by the API (mock now, Django later).
+// The project page must render NO hardcoded copy/numbers — only these fields.
+
+export interface ProjectLegalInfo {
+  assetType: string;      // نوع دارایی
+  documentType: string;   // نوع سند
+  contractPeriod: string; // دوره قرارداد
+  license: string;        // مجوز بهره‌برداری
+}
+
+export interface ProjectReportItem {
+  title: string;          // report name
+  date: string;           // Jalali display date (downloadUrl added with the backend)
+}
+
+// Forecast inputs (assumptions) + display config used by the ROI section.
+export interface ProjectForecastConfig extends ForecastAssumptions {
+  horizonYears: ForecastHorizon;   // افق پیش‌بینی
+  previousPaybackYears: number;    // payback figure for the prior year (note line)
+}
+
+export interface ProjectDetails {
+  distributionPeriod: string;      // دوره توزیع سود
+  legal: ProjectLegalInfo;
+  reports: ProjectReportItem[];
+  risks: string[];
+  forecast: ProjectForecastConfig;
 }
 
 // ─── Portfolio ────────────────────────────────────────────────────────────────
