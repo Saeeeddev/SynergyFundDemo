@@ -20,6 +20,8 @@ interface DropdownProps<T extends string = string> {
   onChange: (value: T) => void
   icon?: ReactNode
   disabled?: boolean
+  /** Fill the available width with a block trigger (label start, caret end). */
+  fullWidth?: boolean
   className?: string
 }
 
@@ -30,6 +32,7 @@ export function Dropdown<T extends string = string>({
   onChange,
   icon,
   disabled,
+  fullWidth,
   className,
 }: DropdownProps<T>) {
   const [open, setOpen] = useState(false)
@@ -60,7 +63,10 @@ export function Dropdown<T extends string = string>({
   }, [open])
 
   return (
-    <div ref={containerRef} className={cn('relative inline-block', className)}>
+    <div
+      ref={containerRef}
+      className={cn('relative', fullWidth ? 'block w-full' : 'inline-block', className)}
+    >
       {/* Trigger — Secondary button look [D §9.8] */}
       <button
         type="button"
@@ -78,11 +84,14 @@ export function Dropdown<T extends string = string>({
           'hover:bg-hover',
           'transition-colors duration-[120ms] ease-out motion-reduce:transition-none',
           'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current',
+          fullWidth && 'flex w-full justify-between',
           disabled && 'opacity-50 cursor-not-allowed pointer-events-none',
         )}
       >
         {icon && <span className="shrink-0 text-text-muted">{icon}</span>}
-        <span>{selected?.label ?? placeholder}</span>
+        <span className={cn('text-start', fullWidth && 'min-w-0 flex-1 truncate', !selected && 'text-text-muted')}>
+          {selected?.label ?? placeholder}
+        </span>
         <ChevronDown
           size={16}
           className={cn(
@@ -124,7 +133,7 @@ export function Dropdown<T extends string = string>({
                 <span className="shrink-0 w-4 flex items-center">
                   {isSel && <Check size={14} className="text-green-base" />}
                 </span>
-                {opt.label}
+                <span className="min-w-0 flex-1 truncate text-start">{opt.label}</span>
               </button>
             )
           })}

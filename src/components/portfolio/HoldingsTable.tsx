@@ -66,7 +66,44 @@ export function HoldingsTable({ holdings, isLoading, isError, onRetry }: Holding
         <div className="lg:col-span-2 flex flex-col gap-3 p-4">
           <h2 className="text-[15px] font-semibold text-text">دارایی‌های فعلی</h2>
 
-          <div className="overflow-x-auto">
+          {/* Mobile: stacked cards — a 6-column table can't fit a phone width */}
+          <div className="flex flex-col gap-2 lg:hidden">
+            {paged.map((h) => {
+              const isSel = h.projectId === selected?.projectId
+              return (
+                <button
+                  type="button"
+                  key={h.projectId}
+                  onClick={() => setSelectedId(h.projectId)}
+                  className={cn(
+                    'w-full rounded-card border p-3 text-start transition-colors',
+                    isSel ? 'border-blue-base bg-blue-tint' : 'border-border bg-surface hover:bg-hover',
+                  )}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="w-2 h-2 rounded-full bg-green-base shrink-0" />
+                      <span className="font-semibold text-text truncate">{h.projectName}</span>
+                    </div>
+                    <ChangeIndicator value={h.pnlPercent} variant="pill" />
+                  </div>
+                  <div className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2">
+                    <MobileStat label="سهم شما (کیلو وات)" value={bidiIsolate(formatNumber(h.sharesOwned / 1000, 1))} />
+                    <MobileStat label="قیمت روز هر کیلووات" value={formatToman(h.currentPrice * 1000)} />
+                    <MobileStat
+                      label="سود و زیان فعلی"
+                      value={formatToman(h.pnl)}
+                      valueClass={h.pnl >= 0 ? 'text-green-deep' : 'text-red-base'}
+                    />
+                    <MobileStat label="ارزش فعلی" value={formatToman(h.totalValue)} valueClass="text-text font-semibold" />
+                  </div>
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Desktop: full table */}
+          <div className="hidden lg:block overflow-x-auto">
             <table className="w-full text-[13px] border-collapse min-w-[640px]">
               <thead>
                 <tr className="text-text-muted text-[12px] border-b border-border">
@@ -197,6 +234,23 @@ function DetailsPanel({ holding }: { holding: Holding }) {
           جزئیات
         </NavButton>
       </div>
+    </div>
+  )
+}
+
+function MobileStat({
+  label,
+  value,
+  valueClass,
+}: {
+  label: string
+  value: string
+  valueClass?: string
+}) {
+  return (
+    <div className="flex flex-col gap-0.5">
+      <span className="text-[11px] text-text-muted">{label}</span>
+      <span className={cn('text-[13px] tabular-nums text-text-2', valueClass)}>{value}</span>
     </div>
   )
 }

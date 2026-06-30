@@ -7,7 +7,7 @@
 // hiding the password here.
 
 const ADMIN_USERNAME = "Test";
-const ADMIN_PASSWORD = "Tesr123";
+const ADMIN_PASSWORD = "Test123";
 
 export function validateCredentials(
   username: string,
@@ -15,3 +15,4 @@ export function validateCredentials(
 ): boolean {
   return username === ADMIN_USERNAME && password === ADMIN_PASSWORD;
 }
+1

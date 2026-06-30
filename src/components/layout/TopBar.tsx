@@ -41,7 +41,6 @@ export function TopBar() {
   const { data: notifications = [] } = useNotifications()
   const unreadCount = useUnreadCount()
   const { data: user = null } = useMe()
-  const pageTitle = usePageTitle()
 
   const initials = (user?.name ?? 'م').charAt(0)
 
@@ -95,11 +94,6 @@ export function TopBar() {
             {initials}
           </span>
         </button>
-        </div>
-
-        {/* Row 2 — current page name, connected sub-row */}
-        <div className="flex items-center h-10 px-4 border-t border-border">
-          <span className="text-[14px] font-semibold text-text truncate">{pageTitle}</span>
         </div>
       </header>
 
@@ -205,6 +199,18 @@ export function TopBar() {
         </MobileSheet>
       )}
     </>
+  )
+}
+
+// ─── Mobile page title ────────────────────────────────────────────────────────
+// Rendered at the top of each page's scrollable content (not in the pinned header),
+// so it scrolls away with the page and sits on the page's own background color.
+export function MobilePageTitle() {
+  const pageTitle = usePageTitle()
+  return (
+    <div className="lg:hidden px-4 pt-4 pb-1">
+      <h1 className="text-[18px] font-bold text-text truncate">{pageTitle}</h1>
+    </div>
   )
 }
 

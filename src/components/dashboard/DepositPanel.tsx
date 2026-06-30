@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react'
 import { Drawer } from '@/components/ui/Drawer'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
+import { Dropdown } from '@/components/ui/Dropdown'
 import { SegmentedControl } from '@/components/ui/SegmentedControl'
 import { UploadCloud } from 'lucide-react'
 import { groupDigits, onlyDigits } from '@/lib/utils/numbers'
@@ -78,11 +79,12 @@ export function DepositPanel({ open, onClose, initialAmount }: DepositPanelProps
         {mode === 'instant' && (
           <div className="flex flex-col gap-4">
             <Field label="درگاه پرداخت">
-              <Select value={gatewayValue} onChange={setGateway}>
-                {gateways.map((g) => (
-                  <option key={g.id} value={g.id}>{g.label}</option>
-                ))}
-              </Select>
+              <Dropdown
+                fullWidth
+                value={gatewayValue}
+                onChange={setGateway}
+                options={gateways.map((g) => ({ value: g.id, label: g.label }))}
+              />
             </Field>
 
             <Input
@@ -129,11 +131,12 @@ export function DepositPanel({ open, onClose, initialAmount }: DepositPanelProps
             </div>
 
             <Field label="به کدام حساب واریز کرده‌اید؟">
-              <Select value={accountValue} onChange={setAccount}>
-                {platformAccounts.map((a) => (
-                  <option key={a.id} value={a.id}>{`${a.bankName} — ${a.cardNumber}`}</option>
-                ))}
-              </Select>
+              <Dropdown
+                fullWidth
+                value={accountValue}
+                onChange={setAccount}
+                options={platformAccounts.map((a) => ({ value: a.id, label: `${a.bankName} — ${a.cardNumber}` }))}
+              />
             </Field>
 
             {/* Upload (UI-only) */}
@@ -173,25 +176,5 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
       <span className="text-[13px] font-medium text-text-muted">{label}</span>
       {children}
     </div>
-  )
-}
-
-function Select({
-  value,
-  onChange,
-  children,
-}: {
-  value: string
-  onChange: (v: string) => void
-  children: React.ReactNode
-}) {
-  return (
-    <select
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className="w-full h-12 md:h-10 rounded-md border border-border-strong bg-surface px-3 text-[14px] text-text focus:outline-none focus:ring-2 focus:ring-green-tint focus:border-green-base"
-    >
-      {children}
-    </select>
   )
 }

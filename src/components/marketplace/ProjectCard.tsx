@@ -19,7 +19,7 @@ import {
 import { NavButton } from '@/components/ui/NavButton'
 import { cn } from '@/lib/utils/cn'
 import { formatToman, formatTomanCompact } from '@/lib/utils/currency'
-import { bidiIsolate, formatNumber, formatPercent, formatCompact } from '@/lib/utils/numbers'
+import { bidiIsolate, formatNumber, formatPercent } from '@/lib/utils/numbers'
 import { formatJalali } from '@/lib/utils/jalali'
 import type { Project, ProjectStatus } from '@/types/domain'
 
@@ -58,9 +58,6 @@ export function ProjectCard({ project, className }: ProjectCardProps) {
   const status = STATUS_CONFIG[project.status]
 
   const capacityMw = project.totalCapacityWatts / 1_000_000
-  const sharesAvailable = Math.round(
-    project.totalCapacityWatts * (1 - project.soldPercent / 100),
-  )
   const totalValue = project.totalCapacityWatts * project.sharePrice
   const pricePerKw = project.sharePrice * 1000
   const reference = `SYN-${project.id.replace(/[^0-9]/g, '').padStart(3, '0')}`
@@ -133,19 +130,11 @@ export function ProjectCard({ project, className }: ProjectCardProps) {
           </div>
         </div>
 
-        {/* 2 stat boxes (asas wells) — available shares + forecast yield */}
-        <div className="grid grid-cols-2 gap-2">
-          <div className="rounded-chip bg-surface-2 border border-border p-2.5">
-            <div className="text-[11px] text-text-muted">سهام موجود (وات)</div>
-            <div className="text-[14px] font-semibold text-text tabular-nums">
-              {bidiIsolate(formatCompact(sharesAvailable))}
-            </div>
-          </div>
-          <div className="rounded-chip bg-surface-2 border border-border p-2.5">
-            <div className="text-[11px] text-text-muted">پیش‌بینی بازده سالانه</div>
-            <div className="text-[14px] font-semibold text-green-deep tabular-nums">
-              {bidiIsolate(formatPercent(project.targetYield))}
-            </div>
+        {/* Forecast yield (asas well) */}
+        <div className="rounded-chip bg-surface-2 border border-border p-2.5">
+          <div className="text-[11px] text-text-muted">پیش‌بینی بازده سالانه</div>
+          <div className="text-[14px] font-semibold text-green-deep tabular-nums">
+            {bidiIsolate(formatPercent(project.targetYield))}
           </div>
         </div>
 

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Sidebar } from './Sidebar'
-import { TopBar } from './TopBar'
+import { TopBar, MobilePageTitle } from './TopBar'
 import { MobileBottomNav } from './MobileBottomNav'
 import { MobileDrawer } from './MobileDrawer'
 import { NavProgressProvider } from './NavProgress'
@@ -33,6 +33,9 @@ export default function ShellClient({ children }: ShellClientProps) {
             border + shadow give the floating-card look from Reference A [D §1, M §5.1].
           */}
           <main className="content-box flex-1 overflow-y-auto pb-20 lg:pb-0">
+            {/* Page title at the top of the scrollable content on mobile (non-sticky,
+                page-colored). Desktop uses each page's own <PageHeader> instead. */}
+            <MobilePageTitle />
             {children}
           </main>
         </div>

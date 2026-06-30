@@ -35,5 +35,9 @@ export function useProject(id: string) {
     queryKey: ["project", id],
     queryFn: () => apiGetProject(id),
     staleTime: 2 * 60 * 1000,
+    // Don't fetch until we have a real id — callers (e.g. the dashboard
+    // showcase card) render before holdings load and pass '' for one tick,
+    // which would 404 and fire the global error toast.
+    enabled: id !== "",
   });
 }

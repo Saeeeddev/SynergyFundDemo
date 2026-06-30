@@ -200,14 +200,23 @@ export function AreaChart({
       },
     },
 
-    // Mobile: shorter chart, fewer x-axis ticks [M §8]
+    // Mobile: shorter chart. Show EVERY label, rotated vertical so the (wide)
+    // Jalali month labels all fit instead of being auto-hidden on overlap.
     responsive: {
       rules: [
         {
           condition: { maxWidth: 768 },
           chartOptions: {
-            chart: { height: 220 },
-            xAxis: { labels: { step: 2 } },
+            chart: { height: 240, marginBottom: 64 },
+            xAxis: {
+              labels: {
+                step: 1,
+                rotation: -90,
+                autoRotation: undefined,
+                align: 'right',
+                style: { fontSize: '10px', fontFamily: CHART_FONT },
+              },
+            },
           },
         },
       ],

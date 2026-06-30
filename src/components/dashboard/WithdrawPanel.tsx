@@ -9,9 +9,9 @@ import { useState } from 'react'
 import { Drawer } from '@/components/ui/Drawer'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
-import { cn } from '@/lib/utils/cn'
+import { Dropdown } from '@/components/ui/Dropdown'
 import { formatToman } from '@/lib/utils/currency'
-import { groupDigits, onlyDigits, formatNumber, bidiIsolate } from '@/lib/utils/numbers'
+import { groupDigits, onlyDigits } from '@/lib/utils/numbers'
 import { toast } from '@/lib/toast'
 import { useCashConfig } from '@/lib/hooks/useCash'
 
@@ -21,21 +21,12 @@ interface WithdrawPanelProps {
   balance: number
 }
 
-const DATE_OPTIONS = [
-  { id: 'instant', label: 'آنی' },
-  { id: 'today',   label: 'امروز' },
-  { id: 'tomorrow', label: 'فردا — ۸ تیر' },
-  { id: 'next',    label: 'سه‌شنبه — ۹ تیر' },
-]
-
 export function WithdrawPanel({ open, onClose, balance }: WithdrawPanelProps) {
   const { data: config } = useCashConfig()
   const accounts = config?.userAccounts ?? []
   const recentAmounts = config?.recentWithdrawAmounts ?? []
-  const dailyCap = config?.dailyWithdrawCap ?? 0
 
   const [account, setAccount] = useState('')
-  const [dateOption, setDateOption] = useState('today')
   const [amount, setAmount] = useState('')
 
   const numAmount = parseFloat(onlyDigits(amount)) || 0
@@ -63,48 +54,13 @@ export function WithdrawPanel({ open, onClose, balance }: WithdrawPanelProps) {
         {/* Destination account */}
         <div className="flex flex-col gap-1.5">
           <span className="text-[13px] font-medium text-text-muted">واریز به:</span>
-          <select
+          <Dropdown
+            fullWidth
+            placeholder="حساب خود را انتخاب کنید"
             value={account}
-            onChange={(e) => setAccount(e.target.value)}
-            className="w-full h-12 md:h-10 rounded-md border border-border-strong bg-surface px-3 text-[14px] text-text focus:outline-none focus:ring-2 focus:ring-green-tint focus:border-green-base"
-          >
-            <option value="">حساب خود را انتخاب کنید</option>
-            {accounts.map((a) => (
-              <option key={a.id} value={a.id}>{`${a.bankName} — ${a.cardNumber}`}</option>
-            ))}
-          </select>
-        </div>
-
-        {/* Settlement date options */}
-        <div className="flex flex-col gap-2">
-          <span className="text-[13px] font-medium text-text-muted">تاریخ برداشت:</span>
-          {DATE_OPTIONS.map((opt) => {
-            const active = dateOption === opt.id
-            return (
-              <button
-                key={opt.id}
-                type="button"
-                onClick={() => setDateOption(opt.id)}
-                className={cn(
-                  'flex items-center justify-between gap-3 rounded-md border px-4 py-3 text-start transition-colors',
-                  active ? 'border-blue-base bg-blue-tint' : 'border-border bg-surface hover:bg-hover',
-                )}
-              >
-                <span className="flex items-center gap-2.5">
-                  <span
-                    className={cn(
-                      'w-4 h-4 rounded-full border-2 shrink-0',
-                      active ? 'border-blue-base bg-blue-base' : 'border-border-strong',
-                    )}
-                  />
-                  <span className="text-[13px] font-medium text-text">{opt.label}</span>
-                </span>
-                <span className="text-[11px] text-text-muted tabular-nums">
-                  تا سقف {bidiIsolate(formatNumber(dailyCap))} ریال
-                </span>
-              </button>
-            )
-          })}
+            onChange={setAccount}
+            options={accounts.map((a) => ({ value: a.id, label: `${a.bankName} — ${a.cardNumber}` }))}
+          />
         </div>
 
         {/* Amount */}
@@ -138,11 +94,6 @@ export function WithdrawPanel({ open, onClose, balance }: WithdrawPanelProps) {
         <Button variant="primary" size="wide" fullWidth onClick={handleSubmit}>
           ثبت درخواست
         </Button>
-
-        <p className="text-[12px] text-text-muted leading-relaxed">
-          درخواست برداشت وجه روزهای کاری بانک‌های ملت، ملی، تجارت، صادرات، خاورمیانه، سامان و
-          پاسارگاد طبق سقف و ساعات اعلام‌شده پردازش می‌شود.
-        </p>
       </div>
     </Drawer>
   )
