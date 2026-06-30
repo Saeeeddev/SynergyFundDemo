@@ -6,8 +6,8 @@
 // session's actual security comes from SESSION_SECRET (see ./token.ts), not from
 // hiding the password here.
 
-const ADMIN_USERNAME = "Saeed";
-const ADMIN_PASSWORD = "S@eed123";
+const ADMIN_USERNAME = "Test";
+const ADMIN_PASSWORD = "Tesr123";
 
 export function validateCredentials(
   username: string,
